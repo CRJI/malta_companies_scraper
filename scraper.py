@@ -34,7 +34,11 @@ headers = {
     'DNT': '1',
 }
 
-cookies = {}
+cookies = {
+    '__utma': '93865246.35980861.1495823328.1495823328.1495823328.1',
+    '__utmc': '93865246',
+    '__utmz': '93865246.1495823328.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)',
+}
 
 data = [
   # ('ctl00_RadScriptManager1_TSM', ';;System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35:en:eb198dbd-2212-44f6-bb15-882bde414f00:ea597d4b:b25378d2;Telerik.Web.UI, Version=2013.3.1015.35, Culture=neutral, PublicKeyToken=121fae78165ba3d4:en:014dc8f9-7cb3-42f7-a773-fe899684c823:16e4e7cd:f7645509:24ee1bba:f46195d3:2003d0b8:1e771326:88144a7a:aa288e2d:ed16cbdc:58366029'),
@@ -96,7 +100,7 @@ def nextPage(data, state, validation, generator, tsm):
         ('RadAJAXControlID', 'ctl00_cphMain_RadAjaxManager1'),
     ]
     data.extend(extraPayload)
-    # pp.pprint(data)
+    pp.pprint(data)
     return data
 
 def makeRequest(data):
@@ -130,10 +134,30 @@ def extractTSM(html):
     if telerik != '':
         quoted = telerik.split('CombinedScripts_=')[-1]
         telerik = urllib.unquote(quoted)
-    return telerik
+    return telerik.replace('+', ' ')
+
+def extractViewState(text):
+    view_state = ''
+    for line in iter(text.splitlines()):
+        if '|70|updatePanel|' in line:
+            view_state = line
+            break
+    view_state = view_state.split('|__VIEWSTATE|')[-1]
+    view_state = view_state.split('|')[0]
+    return view_state
+
+def extractValidation(text):
+    validation = ''
+    for line in iter(text.splitlines()):
+        if '|70|updatePanel|' in line:
+            validation = line
+            break
+    validation = validation.split('|__EVENTVALIDATION|')[-1]
+    validation = validation.split('|')[0]
+    return validation
 
 
-d = requestLetter(data, 'C')
+d = requestLetter(data, 'M')
 res = makeRequest(d)
 getResults(res.text)
 
@@ -147,7 +171,7 @@ s = PyQuery(res.text)('input#__VIEWSTATE').val()
 g = PyQuery(res.text)('input#__VIEWSTATEGENERATOR').val()
 v = PyQuery(res.text)('input#__EVENTVALIDATION').val()
 t = extractTSM(res.text)
-dnp = nextPage(d, s, v, g, t)
+dnp = nextPage(data=d, state=s, validation=v, generator=g, tsm=t)
 resnp = makeRequest(dnp)
 pp.pprint(resnp.text)
 getResults(resnp.text)
