@@ -88,7 +88,6 @@ def generate_first_letter_pages():
         print(letter_params)
         response = _SESSION.post(
             url=_BASE_URL,
-            headers=_HEADERS,
             json=letter_params
         )
         soup = BeautifulSoup(response.text, 'lxml')
@@ -164,8 +163,7 @@ def generate_letter_index_page_rows():
             # Request the next page of results from this letter
             response = requests(
                 url=_BASE_URL,
-                headers=_HEADERS,
-                params=index_page_params
+                json=index_page_params
             ).text
             bs_obj = BeautifulSoup(response, 'lxml')
             current_page = bs_obj.find('a', {'class':'rgCurrentPage'}).get_trext().strip()
@@ -191,6 +189,11 @@ def generate_extracted_data():
 
         # Yield the extracted data
         yield entity
+
+
+def main():
+    for entity in generate_extracted_data():
+        print(entity)
 
 
 if __name__ == '__main__':
