@@ -60,7 +60,7 @@ def generate_first_letter_pages():
         'ctl00_cphMain_RadGrid1_ClientState': '',
     }
 
-    event_argument_template = "{{'Command': 'Select', 'Index': {},}}"
+    event_argument_template = "{{'Command': 'Select', 'Index': {}}}"
     first_letter_template = (
         "{{'logEntries':[],"
         "'value':'{0}',"
@@ -83,9 +83,9 @@ def generate_first_letter_pages():
         letter_params['__VIEWSTATE'] = soup.find('input', {'id': '__VIEWSTATE'})['value']
         letter_params['__VIEWSTATEGENERATOR'] = soup.find('input', {'id': '__VIEWSTATEGENERATOR'})['value']
         letter_params['__EVENTVALIDATION'] = soup.find('input', {'id': '__EVENTVALIDATION'})['value']
-        letter_params['ctl00$cphMain$RadComboBoxFirstLetter'] = first_letter_template.format(letter, letter)
-        letter_params['ctl00_cphMain_RadComboBoxFirstLetter_ClientState'] = letter
-
+        letter_params['ctl00$cphMain$RadComboBoxFirstLetter'] = letter
+        letter_params['ctl00_cphMain_RadComboBoxFirstLetter_ClientState'] = first_letter_template.format(letter, letter)
+        print(letter_params)
         response = _SESSION.post(
             url=_BASE_URL,
             headers=_HEADERS,
