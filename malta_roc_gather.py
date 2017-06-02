@@ -58,6 +58,11 @@ def generate_first_letter_pages():
         'ctl00$cphMain$RadComboBoxFirstLetter': '',
         'ctl00_cphMain_RadComboBoxFirstLetter_ClientState': '',
         'ctl00_cphMain_RadGrid1_ClientState': '',
+        'ctl00$cphMain$RadGrid1$ctl00$ctl02$ctl02$FilterTextBox_CompanyName': '',
+        'ctl00$cphMain$RadGrid1$ctl00$ctl02$ctl02$FilterTextBox_CompanyId': '',
+        'ctl00$cphMain$RadGrid1$ctl00$ctl03$ctl01$PageSizeComboBox': '10',
+        'ctl00_cphMain_RadGrid1_rfltMenu_ClientState': '',
+        'ctl00_cphMain_RadGrid1_ctl00_ctl03_ctl01_PageSizeComboBox_ClientState': ''
     }
 
     event_argument_template = "{{'Command': 'Select', 'Index': {}}}"
