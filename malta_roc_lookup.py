@@ -5,7 +5,7 @@ import sqlite3
 import requests
 from pprint import pprint
 from bs4 import BeautifulSoup
-from malta_roc_gather import generate_extracted_data
+from malta_roc_gather2 import generate_extracted_data
 
 
 def main():

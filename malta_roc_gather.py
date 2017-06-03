@@ -1,5 +1,6 @@
 import re
 import requests
+from pprint import pprint
 from bs4 import BeautifulSoup
 
 
@@ -24,6 +25,13 @@ _HEADERS = {
 # Start a global Session
 _SESSION = requests.Session()
 _SESSION.headers = _HEADERS
+_SESSION.headers['X-MicrosoftAjax'] = 'Delta=true'
+
+_COOKIES = {
+    '__utma': '93865246.35980861.1495823328.1495823328.1495823328.1',
+    '__utmc': '93865246',
+    '__utmz': '93865246.1495823328.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)',
+}
 
 
 def generate_first_letter_pages():
@@ -93,8 +101,12 @@ def generate_first_letter_pages():
         print(letter_params)
         response = _SESSION.post(
             url=_BASE_URL,
-            json=letter_params
+            json=letter_params,
+            cookies=_COOKIES
         )
+        print(response.status_code)
+        x = dir(response)
+        pprint(x)
         soup = BeautifulSoup(response.text, 'lxml')
         yield soup
 
@@ -166,11 +178,12 @@ def generate_letter_index_page_rows():
             index_page_params['__EVENTVALIDATION'] = bs_obj.find('input', {'id': '__EVENTVALIDATION'})['value']
 
             # Request the next page of results from this letter
-            response = requests(
+            response = _SESSION.post(
                 url=_BASE_URL,
-                json=index_page_params
-            ).text
-            bs_obj = BeautifulSoup(response, 'lxml')
+                json=index_page_params,
+                cookies=_COOKIES
+            )
+            bs_obj = BeautifulSoup(response.text, 'lxml')
             current_page = bs_obj.find('a', {'class':'rgCurrentPage'}).get_trext().strip()
 
 
