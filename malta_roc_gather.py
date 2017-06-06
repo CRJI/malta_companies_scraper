@@ -28,7 +28,6 @@ def generate_results_rows():
     # Find the letters
     _BROWSER.find_element_by_xpath('//input[@id="ctl00_cphMain_RadComboBoxFirstLetter_Input"]').click()
     time.sleep(1)
-    _BROWSER.save_screenshot('error2.png')
 
     letters_length = len(_BROWSER.find_elements_by_xpath('//ul[@class="rcbList"][1]//li'))+1
     letter_xpath_template = '//ul[@class="rcbList"][1]//li[{}]'
@@ -39,8 +38,9 @@ def generate_results_rows():
 
         # Build the letter xpath from the template
         letter_xpath = letter_xpath_template.format(index)
-        _BROWSER.find_element_by_xpath('//div[@id="ctl00_cphMain_RadComboBoxFirstLetter"]').click()
+        _BROWSER.find_element_by_xpath('//input[@id="ctl00_cphMain_RadComboBoxFirstLetter_Input"]').click()
         _BROWSER.find_element_by_xpath(letter_xpath).click()
+
         time.sleep(1)
         try:
             # If the page size is not set then set it
@@ -62,7 +62,7 @@ def generate_results_rows():
                 while _BROWSER.find_element_by_xpath('//a[@class="rgCurrentPage"]').text.strip() != last_page:
                     # Go to the next page and extract the rows from it to be processed further
                     _BROWSER.find_element_by_xpath('//input[@class="rgPageNext"]').click()
-                    time.wait(0.5)
+                    time.sleep(0.5)
                     soup = BeautifulSoup(_BROWSER.page_source, 'lxml')
                     rows = soup.findAll('tr', {'id': re.compile('ctl00_cphMain_RadGrid1_ctl00__[0-9]+')})
                     for row in rows:
@@ -92,7 +92,8 @@ def generate_extracted_data():
         entity['name'] = data[0].get_text().strip()
         entity['company_id'] = data[1].get_text().strip()
         entity['address'] = data[2].get_text().strip()
-        entity['status'] = data[3].get_text().strip()
+        entity['locality'] = data[3].get_text().strip()
+        entity['status'] = data[4].get_text().strip()
 
         # Yield the extracted data
         yield entity
