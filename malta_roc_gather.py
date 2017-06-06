@@ -14,7 +14,7 @@ _BROWSER = PhantomJS()
 _BROWSER.set_window_size(1920, 1080)
 
 
-def generate_results_pages():
+def generate_results_rows():
     """
     Go to the first page and extract the parameters then navigate to the first pages of
     results.
@@ -34,15 +34,46 @@ def generate_results_pages():
     letter_xpath_template = '//ul[@class="rcbList"][1]//li[{}]'
 
     # Iterate through all the letters
+    pg_size_set = False
     for index in range(2, letters_length):
 
+        # Build the letter xpath from the template
         letter_xpath = letter_xpath_template.format(index)
-        print(letter_xpath)
         _BROWSER.find_element_by_xpath('//div[@id="ctl00_cphMain_RadComboBoxFirstLetter"]').click()
         _BROWSER.find_element_by_xpath(letter_xpath).click()
+        time.sleep(1)
+        try:
+            # If the page size is not set then set it
+            if not pg_size_set:
+                _BROWSER.find_element_by_xpath('//tr[@class="rgPager"]//input[@id="ctl00_cphMain_RadGrid1_ctl00_ctl03_ctl01_PageSizeComboBox_Input"]').click()
+                _BROWSER.find_element_by_xpath('//ul[@class="rcbList"][1]//li[3]').click()
+                pg_size_set = True
 
+            # Get the rows on this page and yield them
+            soup = BeautifulSoup(_BROWSER.page_source, 'lxml')
+            rows = soup.findAll('tr', {'id': re.compile('ctl00_cphMain_RadGrid1_ctl00__[0-9]+')})
+            for row in rows:
+                yield row
 
+            # If there are more pages of results for this letter now that the page has changed
+            # navigate to the next pages until the last one is reached
+            if soup.select('div.rgWrap.rgInfoPart'):
+                last_page = soup.select('div.rgWrap.rgInfoPart strong')[1].strip()
+                while _BROWSER.find_element_by_xpath('//a[@class="rgCurrentPage"]').text.strip() != last_page:
+                    # Go to the next page and extract the rows from it to be processed further
+                    _BROWSER.find_element_by_xpath('//input[@class="rgPageNext"]').click()
+                    time.wait(0.5)
+                    soup = BeautifulSoup(_BROWSER.page_source, 'lxml')
+                    rows = soup.findAll('tr', {'id': re.compile('ctl00_cphMain_RadGrid1_ctl00__[0-9]+')})
+                    for row in rows:
+                        yield row
 
+        except:
+            # If there are no other pages even at minimum page length extract all the rows and yield them
+            soup = BeautifulSoup(_BROWSER.page_source, 'lxml')
+            rows = soup.findAll('tr', {'id': re.compile('ctl00_cphMain_RadGrid1_ctl00__[0-9]+')})
+            for row in rows:
+                yield row
 
 
 def generate_extracted_data():
@@ -52,7 +83,7 @@ def generate_extracted_data():
     :return: Yield dictionary containing the extracted data
     """
 
-    for row in generate_letter_index_page_rows():
+    for row in generate_results_rows():
 
         entity = dict()
         data = row.select('td')
@@ -68,9 +99,11 @@ def generate_extracted_data():
 
 
 def main():
-    # for entity in generate_extracted_data():
-    #     print(entity)
-    generate_results_pages()
+    """
+    Main function of the script. Handles the execution and output
+    """
+    for entity in generate_extracted_data():
+        print(entity)
 
 
 if __name__ == '__main__':
