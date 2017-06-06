@@ -39,6 +39,7 @@ def generate_results_rows():
         # Build the letter xpath from the template
         letter_xpath = letter_xpath_template.format(index)
         _BROWSER.find_element_by_xpath('//input[@id="ctl00_cphMain_RadComboBoxFirstLetter_Input"]').click()
+        time.sleep(1)
         _BROWSER.find_element_by_xpath(letter_xpath).click()
 
         time.sleep(1)
@@ -55,14 +56,21 @@ def generate_results_rows():
             for row in rows:
                 yield row
 
+            _BROWSER.save_screenshot('images/{}.png'.format(index))
             # If there are more pages of results for this letter now that the page has changed
             # navigate to the next pages until the last one is reached
             if soup.select('div.rgWrap.rgInfoPart'):
-                last_page = soup.select('div.rgWrap.rgInfoPart strong')[1].strip()
-                while _BROWSER.find_element_by_xpath('//a[@class="rgCurrentPage"]').text.strip() != last_page:
+                print('found')
+                last_page = soup.select('div.rgWrap.rgInfoPart strong')[1].get_text().strip()
+                print(last_page)
+                while soup.select('a.rgCurrentPage')[0].get_text().strip() != last_page:
                     # Go to the next page and extract the rows from it to be processed further
+                    print(soup.select('a.rgCurrentPage')[0].get_text().strip())
+                    print(soup.select('a.rgCurrentPage')[0].findParent().get_text().strip())
+                    print('something should happen here')
                     _BROWSER.find_element_by_xpath('//input[@class="rgPageNext"]').click()
-                    time.sleep(0.5)
+                    print('something happened here')
+                    time.sleep(2)
                     soup = BeautifulSoup(_BROWSER.page_source, 'lxml')
                     rows = soup.findAll('tr', {'id': re.compile('ctl00_cphMain_RadGrid1_ctl00__[0-9]+')})
                     for row in rows:
@@ -104,8 +112,8 @@ def main():
     Main function of the script. Handles the execution and output
     """
     for entity in generate_extracted_data():
-        print(entity)
-
+        # print(entity)
+        print('', end='')
 
 if __name__ == '__main__':
     main()
