@@ -42,7 +42,6 @@ def generate_results_rows():
         time.sleep(1)
         _BROWSER.find_element_by_xpath(letter_xpath).click()
         letter_text = _BROWSER.find_element_by_xpath(letter_xpath)
-        print('Letter: ', letter_text)
 
         time.sleep(1)
         try:
