@@ -62,8 +62,6 @@ def generate_results_rows():
             rows = soup.findAll('tr', {'id': re.compile('ctl00_cphMain_RadGrid1_ctl00__[0-9]+')})
             for row in rows:
                 yield row
-
-            _BROWSER.save_screenshot('images/{}.png'.format(index))
             # If there are more pages of results for this letter now that the page has changed
             # navigate to the next pages until the last one is reached
             # First off: Something fucked happens here. some cookies get carried over from one letter to another
@@ -72,7 +70,7 @@ def generate_results_rows():
                 while soup.select('a.rgCurrentPage')[0].get_text().strip() != last_page:
                     # Go to the next page and extract the rows from it to be processed further
                     _BROWSER.find_element_by_xpath('//input[@class="rgPageNext"]').click()
-                    time.sleep(2)
+                    time.sleep(2.5)
                     soup = BeautifulSoup(_BROWSER.page_source, 'lxml')
                     rows = soup.findAll('tr', {'id': re.compile('ctl00_cphMain_RadGrid1_ctl00__[0-9]+')})
                     for row in rows:
@@ -113,10 +111,17 @@ def main():
     """
     Main function of the script. Handles the execution and output
     """
+
+    # The index part is used to generate a set of results that are to be
+    # used in tests for the lookup script.
     try:
+        index = 0
         for entity in generate_extracted_data():
-            # print(entity)
-            print('', end='')
+            print(entity)
+            index += 1
+            if index == 350:
+                break
+
         _BROWSER.close()
     except:
         _BROWSER.close()
