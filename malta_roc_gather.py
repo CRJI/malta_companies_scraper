@@ -41,6 +41,8 @@ def generate_results_rows():
         _BROWSER.find_element_by_xpath('//input[@id="ctl00_cphMain_RadComboBoxFirstLetter_Input"]').click()
         time.sleep(1)
         _BROWSER.find_element_by_xpath(letter_xpath).click()
+        letter_text = _BROWSER.find_element_by_xpath(letter_xpath)
+        print('Letter: ', letter_text)
 
         time.sleep(1)
         try:
@@ -49,6 +51,11 @@ def generate_results_rows():
                 _BROWSER.find_element_by_xpath('//tr[@class="rgPager"]//input[@id="ctl00_cphMain_RadGrid1_ctl00_ctl03_ctl01_PageSizeComboBox_Input"]').click()
                 _BROWSER.find_element_by_xpath('//ul[@class="rcbList"][1]//li[3]').click()
                 pg_size_set = True
+                time.sleep(1)
+
+            # Make sure this is the first page by clicking the first page button
+            _BROWSER.find_element_by_xpath('//input[@class="rgPageFirst"]').click()
+            time.sleep(1)
 
             # Get the rows on this page and yield them
             soup = BeautifulSoup(_BROWSER.page_source, 'lxml')
@@ -59,17 +66,12 @@ def generate_results_rows():
             _BROWSER.save_screenshot('images/{}.png'.format(index))
             # If there are more pages of results for this letter now that the page has changed
             # navigate to the next pages until the last one is reached
+            # First off: Something fucked happens here. some cookies get carried over from one letter to another
             if soup.select('div.rgWrap.rgInfoPart'):
-                print('found')
                 last_page = soup.select('div.rgWrap.rgInfoPart strong')[1].get_text().strip()
-                print(last_page)
                 while soup.select('a.rgCurrentPage')[0].get_text().strip() != last_page:
                     # Go to the next page and extract the rows from it to be processed further
-                    print(soup.select('a.rgCurrentPage')[0].get_text().strip())
-                    print(soup.select('a.rgCurrentPage')[0].findParent().get_text().strip())
-                    print('something should happen here')
                     _BROWSER.find_element_by_xpath('//input[@class="rgPageNext"]').click()
-                    print('something happened here')
                     time.sleep(2)
                     soup = BeautifulSoup(_BROWSER.page_source, 'lxml')
                     rows = soup.findAll('tr', {'id': re.compile('ctl00_cphMain_RadGrid1_ctl00__[0-9]+')})
@@ -111,9 +113,13 @@ def main():
     """
     Main function of the script. Handles the execution and output
     """
-    for entity in generate_extracted_data():
-        # print(entity)
-        print('', end='')
+    try:
+        for entity in generate_extracted_data():
+            # print(entity)
+            print('', end='')
+        _BROWSER.close()
+    except:
+        _BROWSER.close()
 
 if __name__ == '__main__':
     main()
