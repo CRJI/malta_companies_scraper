@@ -1,3 +1,5 @@
+import json
+import pickle
 import re
 import time
 import requests
@@ -113,14 +115,18 @@ def main():
 
     # The index part is used to generate a set of results that are to be
     # used in tests for the lookup script.
+    entity_list = list()
     try:
         index = 0
         for entity in generate_extracted_data():
-            print(entity)
+            entity_list.append(entity)
             index += 1
             if index == 350:
                 break
 
+        pickle_file = open('test_set.log', 'wb')
+        pickle.dump(entity_list, pickle_file)
+        pickle_file.close()
         _BROWSER.close()
     except:
         _BROWSER.close()
