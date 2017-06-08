@@ -1,0 +1,222 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>ROC Supporting Services</title>
+    
+    <link href="../includes/style.css" rel="stylesheet" type="text/css" />
+    <link href="../includes/styleBlue.css" rel="stylesheet" type="text/css" />
+    <link href="../includes/Menu.MFSA.css" rel="stylesheet" type="text/css" />
+    
+    
+
+</head>
+
+<body>
+    <form name="aspnetForm" method="post" action="SearchCompanyInformation.aspx" id="aspnetForm">
+<div>
+<input type="hidden" name="ctl00_RadScriptManager1_TSM" id="ctl00_RadScriptManager1_TSM" value="" />
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMTMxMjk0OTg3Mw9kFgJmD2QWAgIDD2QWBAIHD2QWBgIBDxQrAAIPFgoeBFRleHQFE1NlbGVjdCBGaXJzdCBMZXR0ZXIeC18hRGF0YUJvdW5kZx4OSXNJdGVtU2VsZWN0ZWRnHhNjYWNoZWRTZWxlY3RlZFZhbHVlZB4XRW5hYmxlQWpheFNraW5SZW5kZXJpbmdoZA8UKwAqFCsAAg8WBh4FVmFsdWUFE1NlbGVjdCBGaXJzdCBMZXR0ZXIfAAUTU2VsZWN0IEZpcnN0IExldHRlch4IU2VsZWN0ZWRnZGQUKwACDxYGHwAFASAfBQUBIB8GaGRkFCsAAg8WBh8ABQEiHwUFASIfBmhkZBQrAAIPFgYfAAUBJx8FBQEnHwZoZGQUKwACDxYGHwAFASgfBQUBKB8GaGRkFCsAAg8WBh8ABQFAHwUFAUAfBmhkZBQrAAIPFgYfAAUBMB8FBQEwHwZoZGQUKwACDxYGHwAFATEfBQUBMR8GaGRkFCsAAg8WBh8ABQEyHwUFATIfBmhkZBQrAAIPFgYfAAUBMx8FBQEzHwZoZGQUKwACDxYGHwAFATQfBQUBNB8GaGRkFCsAAg8WBh8ABQE1HwUFATUfBmhkZBQrAAIPFgYfAAUBNh8FBQE2HwZoZGQUKwACDxYGHwAFATcfBQUBNx8GaGRkFCsAAg8WBh8ABQE4HwUFATgfBmhkZBQrAAIPFgYfAAUBOR8FBQE5HwZoZGQUKwACDxYGHwAFAUEfBQUBQR8GaGRkFCsAAg8WBh8ABQFCHwUFAUIfBmhkZBQrAAIPFgYfAAUBQx8FBQFDHwZoZGQUKwACDxYGHwAFAUQfBQUBRB8GaGRkFCsAAg8WBh8ABQFFHwUFAUUfBmhkZBQrAAIPFgYfAAUBRh8FBQFGHwZoZGQUKwACDxYGHwAFAUcfBQUBRx8GaGRkFCsAAg8WBh8ABQFIHwUFAUgfBmhkZBQrAAIPFgYfAAUBSR8FBQFJHwZoZGQUKwACDxYGHwAFAUofBQUBSh8GaGRkFCsAAg8WBh8ABQFLHwUFAUsfBmhkZBQrAAIPFgYfAAUBTB8FBQFMHwZoZGQUKwACDxYGHwAFAU0fBQUBTR8GaGRkFCsAAg8WBh8ABQFOHwUFAU4fBmhkZBQrAAIPFgYfAAUBTx8FBQFPHwZoZGQUKwACDxYGHwAFAVAfBQUBUB8GaGRkFCsAAg8WBh8ABQFRHwUFAVEfBmhkZBQrAAIPFgYfAAUBUh8FBQFSHwZoZGQUKwACDxYGHwAFAVMfBQUBUx8GaGRkFCsAAg8WBh8ABQFUHwUFAVQfBmhkZBQrAAIPFgYfAAUBVR8FBQFVHwZoZGQUKwACDxYGHwAFAVYfBQUBVh8GaGRkFCsAAg8WBh8ABQFXHwUFAVcfBmhkZBQrAAIPFgYfAAUBWB8FBQFYHwZoZGQUKwACDxYGHwAFAVkfBQUBWR8GaGRkFCsAAg8WBh8ABQFaHwUFAVofBmhkZA8UKwEqZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmFgEFeFRlbGVyaWsuV2ViLlVJLlJhZENvbWJvQm94SXRlbSwgVGVsZXJpay5XZWIuVUksIFZlcnNpb249MjAxMy4zLjEwMTUuMzUsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49MTIxZmFlNzgxNjViYTNkNBZYZg8PFgQeCENzc0NsYXNzBQlyY2JIZWFkZXIeBF8hU0ICAmRkAgEPDxYEHwcFCXJjYkZvb3Rlch8IAgJkZAICDw8WBh8FBRNTZWxlY3QgRmlyc3QgTGV0dGVyHwAFE1NlbGVjdCBGaXJzdCBMZXR0ZXIfBmdkZAIDDw8WBh8ABQEgHwUFASAfBmhkZAIEDw8WBh8ABQEiHwUFASIfBmhkZAIFDw8WBh8ABQEnHwUFAScfBmhkZAIGDw8WBh8ABQEoHwUFASgfBmhkZAIHDw8WBh8ABQFAHwUFAUAfBmhkZAIIDw8WBh8ABQEwHwUFATAfBmhkZAIJDw8WBh8ABQExHwUFATEfBmhkZAIKDw8WBh8ABQEyHwUFATIfBmhkZAILDw8WBh8ABQEzHwUFATMfBmhkZAIMDw8WBh8ABQE0HwUFATQfBmhkZAINDw8WBh8ABQE1HwUFATUfBmhkZAIODw8WBh8ABQE2HwUFATYfBmhkZAIPDw8WBh8ABQE3HwUFATcfBmhkZAIQDw8WBh8ABQE4HwUFATgfBmhkZAIRDw8WBh8ABQE5HwUFATkfBmhkZAISDw8WBh8ABQFBHwUFAUEfBmhkZAITDw8WBh8ABQFCHwUFAUIfBmhkZAIUDw8WBh8ABQFDHwUFAUMfBmhkZAIVDw8WBh8ABQFEHwUFAUQfBmhkZAIWDw8WBh8ABQFFHwUFAUUfBmhkZAIXDw8WBh8ABQFGHwUFAUYfBmhkZAIYDw8WBh8ABQFHHwUFAUcfBmhkZAIZDw8WBh8ABQFIHwUFAUgfBmhkZAIaDw8WBh8ABQFJHwUFAUkfBmhkZAIbDw8WBh8ABQFKHwUFAUofBmhkZAIcDw8WBh8ABQFLHwUFAUsfBmhkZAIdDw8WBh8ABQFMHwUFAUwfBmhkZAIeDw8WBh8ABQFNHwUFAU0fBmhkZAIfDw8WBh8ABQFOHwUFAU4fBmhkZAIgDw8WBh8ABQFPHwUFAU8fBmhkZAIhDw8WBh8ABQFQHwUFAVAfBmhkZAIiDw8WBh8ABQFRHwUFAVEfBmhkZAIjDw8WBh8ABQFSHwUFAVIfBmhkZAIkDw8WBh8ABQFTHwUFAVMfBmhkZAIlDw8WBh8ABQFUHwUFAVQfBmhkZAImDw8WBh8ABQFVHwUFAVUfBmhkZAInDw8WBh8ABQFWHwUFAVYfBmhkZAIoDw8WBh8ABQFXHwUFAVcfBmhkZAIpDw8WBh8ABQFYHwUFAVgfBmhkZAIqDw8WBh8ABQFZHwUFAVkfBmhkZAIrDw8WBh8ABQFaHwUFAVofBmhkZAIHDw8WAh8EaGRkAgkPPCsADgIAFCsAAg8WCh4FX2FmYmNoHwFnHgdnZ3NfX2NzaB8EaB4LXyFJdGVtQ291bnQCAWQXAwULRWRpdEluZGV4ZXMWAAUPU2VsZWN0ZWRJbmRleGVzFgAFCFBhZ2VTaXplAgoBFgIWCw8CBRQrAAU8KwAFAQQFC0NvbXBhbnlOYW1lPCsABQEEBQlDb21wYW55SWQ8KwAFAQQFDkNvbXBhbnlBZGRyZXNzPCsABQEEBQ9Db21wYW55TG9jYWxpdHk8KwAFAQQFBlN0YXR1c2RlFCsAAAspelRlbGVyaWsuV2ViLlVJLkdyaWRDaGlsZExvYWRNb2RlLCBUZWxlcmlrLldlYi5VSSwgVmVyc2lvbj0yMDEzLjMuMTAxNS4zNSwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj0xMjFmYWU3ODE2NWJhM2Q0ATwrAAcACyl1VGVsZXJpay5XZWIuVUkuR3JpZEVkaXRNb2RlLCBUZWxlcmlrLldlYi5VSSwgVmVyc2lvbj0yMDEzLjMuMTAxNS4zNSwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj0xMjFmYWU3ODE2NWJhM2Q0AWRkFgofAWceFElzQm91bmRUb0ZvcndhcmRPbmx5aB4IRGF0YUtleXMWAB4FXyFDSVMXAB8LZmRmFgRmDxQrAANkZGRkAgEPFgUUKwACDxYKHwFnHwxoHw0WAB8OFwAfC2ZkFwUFCF8hUENvdW50AgEFA19mZWUFC18hSXRlbUNvdW50ZgUQQ3VycmVudFBhZ2VJbmRleGYFBl8hRFNJQ2YWAh4DX3NlFgIeAl9jZmQWBWRkZGRkFgJnZxYCZg9kFgZmD2QWBGYPDxYGHwcFCCByZ1BhZ2VyHwgCAh4HVmlzaWJsZWhkFgJmDw8WAh4KQ29sdW1uU3BhbgIFZBYCZg9kFgICAQ9kFgJmD2QWCGYPZBYEZg8PFgIeEVVzZVN1Ym1pdEJlaGF2aW9yaGRkAgIPDxYCHxNoZGQCAQ9kFgJmDw8WBB8HBQ1yZ0N1cnJlbnRQYWdlHwgCAmRkAgIPZBYEZg8PFgIfE2hkZAIDDw8WAh8TaGRkAgMPDxYEHwcFEHJnV3JhcCByZ0FkdlBhcnQfCAICZBYCAgEPFCsAAg8WGh8BZx4TRW5hYmxlRW1iZWRkZWRTa2luc2ceGVJlZ2lzdGVyV2l0aFNjcmlwdE1hbmFnZXJnHhVFbmFibGVFbWJlZGRlZFNjcmlwdHNnHhxPbkNsaWVudFNlbGVjdGVkSW5kZXhDaGFuZ2VkBS5UZWxlcmlrLldlYi5VSS5HcmlkLkNoYW5nZVBhZ2VTaXplQ29tYm9IYW5kbGVyHhFFbmFibGVBcmlhU3VwcG9ydGgfCAKAAh8DZB4FV2lkdGgbAAAAAAAAR0ABAAAAHhxFbmFibGVFbWJlZGRlZEJhc2VTdHlsZXNoZWV0Zx4MVGFibGVTdW1tYXJ5ZR4MVGFibGVDYXB0aW9uBRBQYWdlU2l6ZUNvbWJvQm94HgpJbnB1dFRpdGxlZWQPFCsAAxQrAAIPFgYfAAUCMTAfBQUCMTAfBmcWAh4Qb3duZXJUYWJsZVZpZXdJZAUcY3RsMDBfY3BoTWFpbl9SYWRHcmlkMV9jdGwwMGQUKwACDxYGHwAFAjIwHwUFAjIwHwZoFgIfHgUcY3RsMDBfY3BoTWFpbl9SYWRHcmlkMV9jdGwwMGQUKwACDxYGHwAFAjUwHwUFAjUwHwZoFgIfHgUcY3RsMDBfY3BoTWFpbl9SYWRHcmlkMV9jdGwwMGQPFCsBA2ZmZhYBBXhUZWxlcmlrLldlYi5VSS5SYWRDb21ib0JveEl0ZW0sIFRlbGVyaWsuV2ViLlVJLCBWZXJzaW9uPTIwMTMuMy4xMDE1LjM1LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTEyMWZhZTc4MTY1YmEzZDQWCmYPDxYEHwcFCXJjYkhlYWRlch8IAgJkZAIBDw8WBB8HBQlyY2JGb290ZXIfCAICZGQCAg8PFgYfAAUCMTAfBQUCMTAfBmcWAh8eBRxjdGwwMF9jcGhNYWluX1JhZEdyaWQxX2N0bDAwZAIDDw8WBh8ABQIyMB8FBQIyMB8GaBYCHx4FHGN0bDAwX2NwaE1haW5fUmFkR3JpZDFfY3RsMDBkAgQPDxYGHwAFAjUwHwUFAjUwHwZoFgIfHgUcY3RsMDBfY3BoTWFpbl9SYWRHcmlkMV9jdGwwMGQCAQ9kFgRmDw8WBB8ABQYmbmJzcDsfEWhkZAIBDw8WBB8ABQYmbmJzcDsfEWhkZAIBDw8WAh8RaGQWBGYPZBYOZg8PFgIfAAUGJm5ic3A7ZGQCAQ8PFgIfAAUGJm5ic3A7ZGQCAg8PFgIfAAUGJm5ic3A7ZGQCAw8PFgIfAAUGJm5ic3A7ZGQCBA8PFgIfAAUGJm5ic3A7ZGQCBQ8PFgIfAAUGJm5ic3A7ZGQCBg8PFgIfAAUGJm5ic3A7ZGQCAQ8PFgYfBwUIIHJnUGFnZXIfCAICHxFoZBYCZg8PFgIfEgIFZBYCZg9kFgICAQ9kFgJmD2QWCGYPZBYEZg8PFgIfE2hkZAICDw8WAh8TaGRkAgEPZBYCZg8PFgQfBwUNcmdDdXJyZW50UGFnZR8IAgJkZAICD2QWBGYPDxYCHxNoZGQCAw8PFgIfE2hkZAIDDw8WBB8HBRByZ1dyYXAgcmdBZHZQYXJ0HwgCAmQWAgIBDxQrAAIPFhofAWcfFGcfFWcfFmcfFwUuVGVsZXJpay5XZWIuVUkuR3JpZC5DaGFuZ2VQYWdlU2l6ZUNvbWJvSGFuZGxlch8YaB8IAoACHwNkHxkbAAAAAAAAR0ABAAAAHxpnHxtlHxwFEFBhZ2VTaXplQ29tYm9Cb3gfHWVkDxQrAAMUKwACDxYGHwAFAjEwHwUFAjEwHwZnFgIfHgUcY3RsMDBfY3BoTWFpbl9SYWRHcmlkMV9jdGwwMGQUKwACDxYGHwAFAjIwHwUFAjIwHwZoFgIfHgUcY3RsMDBfY3BoTWFpbl9SYWRHcmlkMV9jdGwwMGQUKwACDxYGHwAFAjUwHwUFAjUwHwZoFgIfHgUcY3RsMDBfY3BoTWFpbl9SYWRHcmlkMV9jdGwwMGQPFCsBA2ZmZhYBBXhUZWxlcmlrLldlYi5VSS5SYWRDb21ib0JveEl0ZW0sIFRlbGVyaWsuV2ViLlVJLCBWZXJzaW9uPTIwMTMuMy4xMDE1LjM1LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTEyMWZhZTc4MTY1YmEzZDQWCmYPDxYEHwcFCXJjYkhlYWRlch8IAgJkZAIBDw8WBB8HBQlyY2JGb290ZXIfCAICZGQCAg8PFgYfAAUCMTAfBQUCMTAfBmcWAh8eBRxjdGwwMF9jcGhNYWluX1JhZEdyaWQxX2N0bDAwZAIDDw8WBh8ABQIyMB8FBQIyMB8GaBYCHx4FHGN0bDAwX2NwaE1haW5fUmFkR3JpZDFfY3RsMDBkAgQPDxYGHwAFAjUwHwUFAjUwHwZoFgIfHgUcY3RsMDBfY3BoTWFpbl9SYWRHcmlkMV9jdGwwMGQCAg9kFgZmDw8WAh8RaGRkAgEPDxYCHxFoZGQCAg8PFgIfEgIFFgIeBXN0eWxlBRB0ZXh0LWFsaWduOmxlZnQ7ZAIJDw8WAh8RaGRkGAQFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYCBSRjdGwwMCRjcGhNYWluJFJhZENvbWJvQm94Rmlyc3RMZXR0ZXIFFmN0bDAwJGNwaE1haW4kUmFkR3JpZDEFOWN0bDAwJGNwaE1haW4kUmFkR3JpZDEkY3RsMDAkY3RsMDMkY3RsMDEkUGFnZVNpemVDb21ib0JveA8UKwACZQUCMTBkBTljdGwwMCRjcGhNYWluJFJhZEdyaWQxJGN0bDAwJGN0bDAyJGN0bDAwJFBhZ2VTaXplQ29tYm9Cb3gPFCsAAmUFAjEwZAUkY3RsMDAkY3BoTWFpbiRSYWRDb21ib0JveEZpcnN0TGV0dGVyDxQrAAIFE1NlbGVjdCBGaXJzdCBMZXR0ZXIFE1NlbGVjdCBGaXJzdCBMZXR0ZXJk/HEp/39UYAFjfMkdl8gAjhhrecU=" />
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="/WebResource.axd?d=M-f5UhGG2vjwwK06f2-55OinF8NVOHV7FYH0_P-IiklnCJ5loUMOkYnNfBD4PVYzZ6bjMYzVTo-Z6cA250UBCKaezx81&amp;t=635588660026805809" type="text/javascript"></script>
+
+<link class='Telerik_stylesheet' type='text/css' rel='stylesheet' href='/WebResource.axd?d=XJp1du-gzpZOWy4KfpqFTIjfmtDPdzgvCDmNZlgaRFk4-QfkJlSS9mqHUd81GJDh_LKOvoDFR8WEXRSvJBQEMnzTfF_xiAYoWDtJdy9oY3sLKjNedqDCxy7BCRL2trEqRctOiw2&amp;t=635888841892335999' /><link class='Telerik_stylesheet' type='text/css' rel='stylesheet' href='/WebResource.axd?d=r8EwsuZ2oFLSVTyXagO7HhcPQtUPIk1dGnl6s2-EjB5BtojfzDYdX4lIPsqOQaONgL7gjncoYdOZChCpVBigifyIcMg77QzRbMk4u80EjJkq3c_yIZvzbHIrGNo08Qx_xfIaQ_sTVM838h34hFfrmFeqI0Q1&amp;t=635888841892335999' /><link class='Telerik_stylesheet' type='text/css' rel='stylesheet' href='/WebResource.axd?d=dJwnd2mvivYbz1m2MhmnCvAvR8LrYKdC0m6oZArvHSP3vWTJW0znYr13ltJhY-LCQZXG0TazSetCjDzA2tA3J0Lc-FVPZOZsvijhCc1iW-B-QfUpGEXSi48ktmvJUeTlXe14Zg2&amp;t=635888841892335999' /><link class='Telerik_stylesheet' type='text/css' rel='stylesheet' href='/WebResource.axd?d=g4toqchs_8jitKZGAX-bJfDtOKM-mhOiKlM0nlP4uFJ-uGq-LM3EK96SJplCJ86KGB1x1FtVGm1lnxW9hhVzzjP9qcvNH7EEzHlODGDVKW4H9PkY89KVxV6KcMT8MTVY0zG4Xw2&amp;t=635888841892335999' /><link class='Telerik_stylesheet' type='text/css' rel='stylesheet' href='/WebResource.axd?d=IPl5zw-K0ZbvSYer3zns5aUhFF8jgKl5vH1zd8G3goiFIySVwhkItAOzVOoht9OCHXZJFacJrurlGH6WyrLVT98eM-ah6WFz_FrhZlXfWWRVnTtJo1MOHV0IEEcCuewhCOiXumv8yFR8m5FDv7XCMEtU4WA1&amp;t=635888841890308012' />
+<script src="/Telerik.Web.UI.WebResource.axd?_TSM_HiddenField_=ctl00_RadScriptManager1_TSM&amp;compress=1&amp;_TSM_CombinedScripts_=%3b%3bSystem.Web.Extensions%2c+Version%3d3.5.0.0%2c+Culture%3dneutral%2c+PublicKeyToken%3d31bf3856ad364e35%3aen%3aeb198dbd-2212-44f6-bb15-882bde414f00%3aea597d4b%3ab25378d2%3bTelerik.Web.UI%2c+Version%3d2013.3.1015.35%2c+Culture%3dneutral%2c+PublicKeyToken%3d121fae78165ba3d4%3aen%3a014dc8f9-7cb3-42f7-a773-fe899684c823%3a16e4e7cd%3af7645509%3a24ee1bba%3af46195d3%3a2003d0b8%3a1e771326%3a88144a7a%3aaa288e2d%3aed16cbdc%3a58366029" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<div>
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="402C1282" />
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWBgKukaXDDgL8nInSDwL8nIXSDwL8nIHSDwL8nP3RDwL8nJnSD9IxoMXWDonZFLCykKI2sPvAcqzk" />
+</div>
+    
+    <a name="top" id="top"></a>
+    
+    <div id="container">
+        <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$RadScriptManager1', document.getElementById('aspnetForm'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls(['tctl00$cphMain$ctl00$cphMain$RadGrid1Panel','tctl00$cphMain$RadAjaxManager1SU'], ['ctl00$cphMain$RadGrid1'], [], 90);
+//]]>
+</script>
+
+        
+        <div class="topLinks">
+            <a href="http://rocsupport.mfsa.com.mt">Home</a> | <a href="http://registry.mfsa.com.mt" target="_blank">Registry of Companies</a> | <a href="http://www.mfsa.com.mt" target="_blank">MFSA</a> | <a href="http://mymoneybox.mfsa.com.mt" target="_blank">Consumer Help</a> | <a href="../pages/contact.aspx">Contact Us</a>
+        </div>
+        
+        <div class="header">
+            <a href="http://rocsupport.mfsa.com.mt"><img src="../images/logo_roc.png" width="300" height="66" alt="MFSA" /></a>
+            
+            <div class="alignRight">
+                
+            </div>
+        </div>
+        
+        <div id="NavigationBar">
+            <ul>
+            <li><a href="../pages/Default.aspx">Home</a></li>
+                <li><a href="../pages/RecentlyRegisteredCompanies.aspx">Recently Registered Companies</a></li>
+                <li><a href="../pages/SearchCompanyInformation.aspx">Free Company Information</a></li>
+                <!--<li><a href="../pages/MSEDataForROC.aspx">Holdings Listed on MSE</a></li>-->
+                <li><a href="http://www.mfsa.com.mt/pages/viewcontent.aspx?id=231">Guide to Regulation</a></li>
+                <li><a href="../pages/Publications.aspx">Publications</a></li>
+            </ul>
+        </div>
+        
+        <div id="Content">
+            <span id="ctl00_lblHeader"></span>
+            <span id="ctl00_lblBreadcrumb"></span>
+            
+    <table width="100%" border="0" cellspacing="0" cellpadding="5">
+        <tr>
+            <td class="RightContentChildPage">
+                <b>Company names starting with letter:</b>
+            </td>
+            <td align="left">
+                            
+                <div id="ctl00_cphMain_RadComboBoxFirstLetter" class="RadComboBox RadComboBox_Default" style="width:220px;white-space:normal;">
+	<!-- 2013.3.1015.35 --><table summary="combobox" border="0" style="border-width:0;border-collapse:collapse;width:100%">
+		<tr class="rcbReadOnly">
+			<td class="rcbInputCell rcbInputCellLeft" style="width:100%;"><input name="ctl00$cphMain$RadComboBoxFirstLetter" type="text" class="rcbInput radPreventDecorate" id="ctl00_cphMain_RadComboBoxFirstLetter_Input" value="Select First Letter" readonly="readonly" /></td><td class="rcbArrowCell rcbArrowCellRight"><a id="ctl00_cphMain_RadComboBoxFirstLetter_Arrow" style="overflow: hidden;display: block;position: relative;outline: none;">select</a></td>
+		</tr>
+	</table><div class="rcbSlide" style="z-index:6000;"><div id="ctl00_cphMain_RadComboBoxFirstLetter_DropDown" class="RadComboBoxDropDown RadComboBoxDropDown_Default " style="display:none;"><div class="rcbScroll rcbWidth" style="height:200px;width:100%;"><ul class="rcbList" style="list-style:none;margin:0;padding:0;zoom:1;"><li class="rcbItem">Select First Letter</li><li class="rcbItem"> </li><li class="rcbItem">&quot;</li><li class="rcbItem">'</li><li class="rcbItem">(</li><li class="rcbItem">@</li><li class="rcbItem">0</li><li class="rcbItem">1</li><li class="rcbItem">2</li><li class="rcbItem">3</li><li class="rcbItem">4</li><li class="rcbItem">5</li><li class="rcbItem">6</li><li class="rcbItem">7</li><li class="rcbItem">8</li><li class="rcbItem">9</li><li class="rcbItem">A</li><li class="rcbItem">B</li><li class="rcbItem">C</li><li class="rcbItem">D</li><li class="rcbItem">E</li><li class="rcbItem">F</li><li class="rcbItem">G</li><li class="rcbItem">H</li><li class="rcbItem">I</li><li class="rcbItem">J</li><li class="rcbItem">K</li><li class="rcbItem">L</li><li class="rcbItem">M</li><li class="rcbItem">N</li><li class="rcbItem">O</li><li class="rcbItem">P</li><li class="rcbItem">Q</li><li class="rcbItem">R</li><li class="rcbItem">S</li><li class="rcbItem">T</li><li class="rcbItem">U</li><li class="rcbItem">V</li><li class="rcbItem">W</li><li class="rcbItem">X</li><li class="rcbItem">Y</li><li class="rcbItem">Z</li></ul></div></div></div><input id="ctl00_cphMain_RadComboBoxFirstLetter_ClientState" name="ctl00_cphMain_RadComboBoxFirstLetter_ClientState" type="hidden" />
+</div>
+                               
+                
+               
+                
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">               
+                <!-- grid content start -->
+                <div id="ctl00_cphMain_RadAjaxManager1SU">
+	<span id="ctl00_cphMain_RadAjaxManager1" style="display:none;"></span>
+</div>
+                <div id="ctl00_cphMain_RadAjaxLoadingPanel1" style="display:none;height:75px;width:75px;">
+	
+                    <img alt="Loading..." src='/WebResource.axd?d=OJUUjaoxUKi7xDJWIJDlrmEQk6lt5V35HTmFxgmzEjphu5gjOV8OXEpc63ooNK14ITer9RFC5uzG2pI0G0hYYdPTtn8Uu8qFA1UpLCqeq4yMf_8VA9_bqRi1f8hRTQELGopTDq4yAHPWKs4FANsVhQrmB6w1&amp;t=635888841892335999' style="border:0;" />
+                
+</div>                
+                
+                <div class="RadAjaxPanel" id="ctl00_cphMain_ctl00_cphMain_RadGrid1Panel">
+	<div id="ctl00_cphMain_RadGrid1" class="RadGrid RadGrid_WebBlue" style="width:100%;">
+
+	<table class="rgMasterTable" border="0" id="ctl00_cphMain_RadGrid1_ctl00" style="width:100%;table-layout:auto;empty-cells:show;">
+	<colgroup>
+		<col style="width:20%" />
+		<col style="width:20%" />
+		<col style="width:20%" />
+		<col style="width:20%" />
+		<col style="width:20%" />
+	</colgroup>
+<thead>
+		<tr>
+			<th scope="col" class="rgHeader" valign="top" style="font-weight:bold;text-align:center;"><a title="Click here to sort" href="javascript:__doPostBack('ctl00$cphMain$RadGrid1$ctl00$ctl02$ctl01$ctl00','')">Company Name</a></th><th scope="col" class="rgHeader" valign="top" style="font-weight:bold;text-align:center;"><a title="Click here to sort" href="javascript:__doPostBack('ctl00$cphMain$RadGrid1$ctl00$ctl02$ctl01$ctl01','')">Company Id</a></th><th scope="col" class="rgHeader" valign="top" style="font-weight:bold;text-align:center;"><a title="Click here to sort" href="javascript:__doPostBack('ctl00$cphMain$RadGrid1$ctl00$ctl02$ctl01$ctl02','')">Company Address</a></th><th scope="col" class="rgHeader" valign="top" style="font-weight:bold;text-align:center;"><a title="Click here to sort" href="javascript:__doPostBack('ctl00$cphMain$RadGrid1$ctl00$ctl02$ctl01$ctl03','')">Company Locality</a></th><th scope="col" class="rgHeader" valign="top" style="font-weight:bold;text-align:center;"><a title="Click here to sort" href="javascript:__doPostBack('ctl00$cphMain$RadGrid1$ctl00$ctl02$ctl01$ctl04','')">Status</a></th>
+		</tr>
+	</thead><tbody>
+	<tr class="rgNoRecords">
+		<td colspan="5" style="text-align:left;"><div>No records to display.</div></td>
+	</tr>
+	</tbody>
+
+</table><input id="ctl00_cphMain_RadGrid1_ClientState" name="ctl00_cphMain_RadGrid1_ClientState" type="hidden" />
+		</div>
+
+</div>
+                <!-- grid content end -->
+            </td>
+        </tr>
+    </table>
+
+        </div>
+        
+        
+    </div>
+    
+    <div id="footer">
+        <div class="bottom-menu">
+            <ul>
+                <li><a href="../pages/disclaimer.aspx">Disclaimer, Copyright &amp; Privacy Policy</a></li>
+                <li><a href="../pages/contact.aspx">Contact us</a></li>
+            </ul>
+        </div>
+        
+        <div class="top">
+            <a href="#top"><img src="../images/top.png" alt="Go To Top" width="33" height="14" /></a>
+        </div>
+        
+        <div class="clear">
+        </div>
+        
+        <div id="credits">
+            <a href="http://www.mfsa.com.mt">Malta Financial Services Authority</a>
+        </div>
+        
+        <script type="text/javascript">
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', 'UA-11636285-2']);
+          _gaq.push(['_trackPageview']);
+
+          (function() 
+          {
+              var ga = document.createElement('script');
+              ga.type = 'text/javascript'; 
+              ga.async = true;
+              ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+
+              var s = document.getElementsByTagName('script')[0]; 
+              s.parentNode.insertBefore(ga, s);
+          })();
+        </script>
+    </div>
+    
+
+<script type="text/javascript">
+//<![CDATA[
+Sys.Application.initialize();
+
+WebForm_InitCallback();Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadComboBox, {"_dropDownWidth":0,"_height":200,"_isAspNet35":true,"_postBackReference":"__doPostBack(\u0027ctl00$cphMain$RadComboBoxFirstLetter\u0027,\u0027arguments\u0027)","_skin":"Default","_text":"Select First Letter","_uniqueId":"ctl00$cphMain$RadComboBoxFirstLetter","_value":"Select First Letter","clientStateFieldID":"ctl00_cphMain_RadComboBoxFirstLetter_ClientState","collapseAnimation":"{\"duration\":450}","expandAnimation":"{\"duration\":450}","itemData":[{"value":"Select First Letter","selected":true},{"text":" ","value":" "},{"value":"\""},{"value":"\u0027"},{"value":"("},{"value":"@"},{"value":"0"},{"value":"1"},{"value":"2"},{"value":"3"},{"value":"4"},{"value":"5"},{"value":"6"},{"value":"7"},{"value":"8"},{"value":"9"},{"value":"A"},{"value":"B"},{"value":"C"},{"value":"D"},{"value":"E"},{"value":"F"},{"value":"G"},{"value":"H"},{"value":"I"},{"value":"J"},{"value":"K"},{"value":"L"},{"value":"M"},{"value":"N"},{"value":"O"},{"value":"P"},{"value":"Q"},{"value":"R"},{"value":"S"},{"value":"T"},{"value":"U"},{"value":"V"},{"value":"W"},{"value":"X"},{"value":"Y"},{"value":"Z"}],"localization":"{\"AllItemsCheckedString\":\"All items checked\",\"ItemsCheckedString\":\"items checked\",\"CheckAllString\":\"Check All\"}","selectedIndex":0}, null, null, $get("ctl00_cphMain_RadComboBoxFirstLetter"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadAjaxManager, {"_updatePanels":"","ajaxSettings":[{InitControlID : "ctl00_cphMain_RadGrid1",UpdatedControls : [{ControlID:"ctl00_cphMain_RadGrid1",PanelID:""}]}],"clientEvents":{OnRequestStart:"",OnResponseEnd:""},"defaultLoadingPanelID":"","enableAJAX":true,"enableHistory":false,"links":[],"styles":[],"uniqueID":"ctl00$cphMain$RadAjaxManager1","updatePanelsRenderMode":0}, null, null, $get("ctl00_cphMain_RadAjaxManager1"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadAjaxLoadingPanel, {"initialDelayTime":0,"isSticky":false,"minDisplayTime":0,"skin":"","transparency":25,"uniqueID":"ctl00$cphMain$RadAjaxLoadingPanel1","zIndex":90000}, null, null, $get("ctl00_cphMain_RadAjaxLoadingPanel1"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadGrid, {"ClientID":"ctl00_cphMain_RadGrid1","ClientSettings":{"AllowAutoScrollOnDragDrop":true,"ShouldCreateRows":true,"DataBinding":{},"Selecting":{"CellSelectionMode":0},"Scrolling":{},"Resizing":{},"ClientMessages":{},"KeyboardNavigationSettings":{"AllowActiveRowCycle":false,"EnableKeyboardShortcuts":true,"FocusKey":89,"InitInsertKey":73,"RebindKey":82,"ExitEditInsertModeKey":27,"UpdateInsertItemKey":13,"DeleteActiveRow":127,"ExpandDetailTableKey":39,"CollapseDetailTableKey":37,"SaveChangesKey":85,"CancelChangesKey":67},"Animation":{},"Virtualization":{}},"Skin":"WebBlue","UniqueID":"ctl00$cphMain$RadGrid1","_activeRowIndex":"","_controlToFocus":"","_currentPageIndex":0,"_defaultDateTimeFormat":"dd/MM/yyyy HH:mm:ss","_editIndexes":"[]","_embeddedSkin":true,"_gridTableViewsData":"[{\"ClientID\":\"ctl00_cphMain_RadGrid1_ctl00\",\"UniqueID\":\"ctl00$cphMain$RadGrid1$ctl00\",\"PageSize\":10,\"PageCount\":1,\"EditMode\":\"EditForms\",\"AllowPaging\":true,\"CurrentPageIndex\":0,\"VirtualItemCount\":0,\"AllowMultiColumnSorting\":true,\"AllowNaturalSort\":true,\"AllowFilteringByColumn\":false,\"PageButtonCount\":10,\"HasDetailTables\":false,\"HasMultiHeaders\":false,\"CheckListWebServicePath\":\"\",\"GroupLoadMode\":\"Server\",\"PagerAlwaysVisible\":false,\"IsItemInserted\":false,\"clientDataKeyNames\":[],\"hasDetailItemTemplate\":false,\"_dataBindTemplates\":false,\"_selectedItemStyle\":\"\",\"_selectedItemStyleClass\":\"rgSelectedRow\",\"_columnsData\":[{\"UniqueName\":\"CompanyName\",\"Resizable\":true,\"Reorderable\":true,\"Selectable\":true,\"Groupable\":true,\"ColumnType\":\"GridBoundColumn\",\"ColumnGroupName\":\"\",\"Editable\":false,\"DataTypeName\":\"System.String\",\"DataField\":\"CompanyName\",\"ReadOnly\":true,\"Display\":true},{\"UniqueName\":\"CompanyId\",\"Resizable\":true,\"Reorderable\":true,\"Selectable\":true,\"Groupable\":true,\"ColumnType\":\"GridBoundColumn\",\"ColumnGroupName\":\"\",\"Editable\":false,\"DataTypeName\":\"System.String\",\"DataField\":\"CompanyId\",\"ReadOnly\":true,\"Display\":true},{\"UniqueName\":\"CompanyAddress\",\"Resizable\":true,\"Reorderable\":true,\"Selectable\":true,\"Groupable\":true,\"ColumnType\":\"GridBoundColumn\",\"ColumnGroupName\":\"\",\"Editable\":false,\"DataTypeName\":\"System.String\",\"DataField\":\"CompanyAddress\",\"ReadOnly\":true,\"Display\":true},{\"UniqueName\":\"CompanyLocality\",\"Resizable\":true,\"Reorderable\":true,\"Selectable\":true,\"Groupable\":true,\"ColumnType\":\"GridBoundColumn\",\"ColumnGroupName\":\"\",\"Editable\":false,\"DataTypeName\":\"System.String\",\"DataField\":\"CompanyLocality\",\"ReadOnly\":true,\"Display\":true},{\"UniqueName\":\"Status\",\"Resizable\":true,\"Reorderable\":true,\"Selectable\":true,\"Groupable\":true,\"ColumnType\":\"GridBoundColumn\",\"ColumnGroupName\":\"\",\"Editable\":false,\"DataTypeName\":\"System.String\",\"DataField\":\"Status\",\"ReadOnly\":true,\"Display\":true}]}]","_masterClientID":"ctl00_cphMain_RadGrid1_ctl00","_shouldFocusOnPage":false,"allowMultiRowSelection":false,"clientStateFieldID":"ctl00_cphMain_RadGrid1_ClientState"}, null, null, $get("ctl00_cphMain_RadGrid1"));
+});
+//]]>
+</script>
+</form>
+</body>
+</html>
