@@ -20,6 +20,8 @@ _SEARCH_PAGE_URL = 'http://registry.mfsa.com.mt/companySearch.do?action=companyD
 _SEARCH_URL = 'http://registry.mfsa.com.mt/companiesReport.do?action=companyDetails'
 _INVOLVED_PARTIES_URL = 'http://registry.mfsa.com.mt/companyDetailsRO.do?action=involvementList'
 _AUTHORISED_CAPITAL_URL = 'http://registry.mfsa.com.mt/companyDetailsRO.do?action=authorisedCapital'
+_DOCUMENTS_URL_TEMPLATE = 'http://registry.mfsa.com.mt/documentsList.do?action=companyDetails&companyId={}'
+_DOCUMENTS_URL_PAGED_TEMPLATE = 'http://registry.mfsa.com.mt/documentsList.do?action=companyDetails&companyId={}&pager.offset={}'
 
 
 _LOGIN_DATA = {
@@ -87,11 +89,28 @@ def generate_something():
         response = _SESSION.get(_AUTHORISED_CAPITAL_URL)
         soup = BeautifulSoup(response.text, 'lxml')
 
+        # Extract general data about the issued and authorised shares
         entity['authorised_shares'] = list()
-        currency =  ''
+        entity['total_authorised_shares'] = soup.find('td', text=re.compile('.*Total No\. of Authorised Shares.*'))
+        entity['total_authorised_shares'] = entity['total_authorised_shares'].findNextSibling('td').get_text().strip()
+        entity['total_authorised_shares'] = re.sub('\s+|\n', ' ', entity['total_authorised_shares']).strip()
+        entity['total_authorised_shares'] = re.sub(',', '', entity['total_authorised_shares']).strip()
+        entity['total_authorised_shares_value'] = re.match('.*\(.*?([0-9\.]+).*\).*', entity['total_authorised_shares'])
+        entity['total_authorised_shares_value'] = eval(entity['total_authorised_shares_value'].groups()[0].strip())
+        entity['total_authorised_shares'] = eval(re.sub('\(.*\).*', '', entity['total_authorised_shares']))
+        entity['total_issued_shares'] = soup.find('td', text=re.compile('.*Total No\. of Issued Shares.*'))
+        entity['total_issued_shares'] = entity['total_issued_shares'].findNextSibling('td').get_text().strip()
+        entity['total_issued_shares'] = re.sub('\s+|\n', ' ', entity['total_issued_shares']).strip()
+        entity['total_issued_shares'] = re.sub(',', '', entity['total_issued_shares']).strip()
+        entity['total_issued_shares_value'] = re.match('.*\(.*?([0-9\.]+).*\).*', entity['total_issued_shares'])
+        entity['total_issued_shares_value'] = eval(entity['total_issued_shares_value'].groups()[0].strip())
+        entity['total_issued_shares'] = eval(re.sub('\(.*\).*', '', entity['total_issued_shares']))
+        entity['authorised_shares'] = list()
         table_rows = soup.find('td', text=re.compile('.*Nominal Value Per Share in .*'))
         currency = re.match('.*Nominal Value Per Share in (.*)', table_rows.get_text().strip())
         currency = currency.groups()[0].strip()
+        entity['shares_currency'] = currency
+
         table_rows = table_rows.findParent('table').findAll('tr')
 
         # If there is info about the issued shares extract each line and add it to the list
@@ -99,7 +118,6 @@ def generate_something():
             for row in table_rows[1:]:
                 row_data = row.select('td')
                 share = dict()
-                share['currency'] = currency
                 share['authorised_share_capital'] = re.sub(',', '', row_data[0].get_text().strip())
                 share['authorised_share_capital'] = eval(share['authorised_share_capital'])
                 share['type'] = re.sub('\s*', '', row_data[1].get_text().strip())
@@ -123,19 +141,17 @@ def generate_something():
             section = re.match('\s*(.*?)\(.*\).*', table.get_text().strip()).groups()[0]
             entity['involved_parties'][section] = list()
             sections[section] = list()
-
             table = table.findParent('tr')
 
-            for party in table.findNextSiblings('tr'):
+            for party in table.findNextSiblings():
                 if party.find('hr'):
-                   break
+                    break
 
                 sections[section].append(party)
 
         # Extract the data from each section
         for section, involved_parties in sections.items():
             for party in involved_parties:
-                # print(involved_parties)
                 # If the row is empty skip it
                 if not party.get_text().strip():
                     continue
@@ -144,25 +160,56 @@ def generate_something():
                 if party.find('td', {'class': 'tablehead'}):
                     continue
 
-                if party.find('a', {'onmouseout': "this.className='pNormal'"}):
+                if party.find('tr', {'onmouseout': "this.className='pNormal'"}):
                     party_dict = dict()
                     party_data = party.findAll('td')
                     party_dict['name'] = party_data[0].get_text().strip()
+                    party_dict['name'] = re.split('\n', party_dict['name'])
+                    if len(party_dict['name']) > 1:
+                        party_dict['name'], party_dict['party_id'] = party_dict['name'][0], party_dict['name'][1]
+                    elif len(party_dict['name']) == 1:
+                        party_dict['name'] = party_dict['name'][0]
+                        party_dict['party_id'] = ''
+                    else:
+                        party_dict['name'] = ''
+                        party_dict['party_id'] = ''
+
+                    party_dict['address'] = party_data[1].get_text().strip()
+                    party_dict['nationality'] = party_data[2].get_text().strip()
+
+                    # If this party is a shareholder add the details about the shares they hold
+                    if section.lower() == 'shareholders':
+                        party_dict['shares'] = dict()
+                        shares_data = party.findNext('td', text=re.compile('.*Shares.*'), attrs={'class': 'tableHeadDark'})
+                        shares_data = shares_data.findNext('td', {'class': 'tablehead'}).findParent('tr').findNextSibling('tr')
+                        shares_data = shares_data.findAll('td')
+                        party_dict['shares']['type'] = shares_data[0].get_text().strip()
+                        party_dict['shares']['class'] = shares_data[1].get_text().strip()
+                        party_dict['shares']['issued_shares'] = re.sub(',', '', shares_data[2].get_text().strip()).strip()
+                        party_dict['shares']['issued_shares'] = eval(party_dict['shares']['issued_shares'])
+                        party_dict['shares']['paid_up_%'] = eval(shares_data[3].get_text().strip())
+                        party_dict['shares']['nominal_value_per_share'] = eval(shares_data[4].get_text().strip())
 
                     entity['involved_parties'][section].append(party_dict)
 
-
-
+        # Gather the data about all the documents
+        entity['documents'] = list()
+        documents_url = _DOCUMENTS_URL_TEMPLATE.format(entity['company_id'])
+        response = _SESSION.get(documents_url)
         try:
-            pass
+            if entity['company_id'] == 'C 37840':
+                raise FloatingPointError
         except:
             with open('error.htm', 'wt') as error:
                 error.write(response.text)
                 break
 
+        soup = BeautifulSoup(response.text, 'lxml')
+        offset = 0
+        while True:
+            pass
 
-
-        pprint(entity)
+        # pprint(entity)
         print()
         print()
         print()
