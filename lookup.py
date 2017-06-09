@@ -120,20 +120,22 @@ def generate_something():
         # Separate the big table into definite sections
         sections = dict()
         for table in tables:
+            section = re.match('\s*(.*?)\(.*\).*', table.get_text().strip()).groups()[0]
+            entity['involved_parties'][section] = list()
+            sections[section] = list()
+
             table = table.findParent('tr')
-            party_type = re.match('\s*(.*?)\(.*\).*', table.get_text().strip()).groups()[0]
-            entity['involved_parties'][party_type] = list()
-            sections[party_type] = list()
+
             for party in table.findNextSiblings('tr'):
                 if party.find('hr'):
                    break
 
-                sections[party_type].append(party)
+                sections[section].append(party)
 
         # Extract the data from each section
         for section, involved_parties in sections.items():
             for party in involved_parties:
-                print(involved_parties)
+                # print(involved_parties)
                 # If the row is empty skip it
                 if not party.get_text().strip():
                     continue
@@ -142,7 +144,7 @@ def generate_something():
                 if party.find('td', {'class': 'tablehead'}):
                     continue
 
-                if party.has_attr('onmouseout'):
+                if party.find('a', {'onmouseout': "this.className='pNormal'"}):
                     party_dict = dict()
                     party_data = party.findAll('td')
                     party_dict['name'] = party_data[0].get_text().strip()
@@ -161,6 +163,8 @@ def generate_something():
 
 
         pprint(entity)
+        print()
+        print()
         print()
         index -= 1
         if not index:
