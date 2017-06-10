@@ -39,7 +39,7 @@ _HEADERS = { 'Accept':'*/*',
 _SESSION = requests.Session()
 
 
-def generate_something():
+def generate_lookup_data():
     """
     Login and go to the search page. There perform the search based on the company id.
     For each company gather the
@@ -68,8 +68,10 @@ def generate_something():
     entity_list = pickle.load(company_file)
 
     index = 100
+
     # Navigate to the search url and
     for entity in entity_list:
+        print(index)
         # Perform the search for this entity
         _SESSION.get(_SEARCH_URL)
         params = dict()
@@ -196,23 +198,55 @@ def generate_something():
         entity['documents'] = list()
         documents_url = _DOCUMENTS_URL_TEMPLATE.format(entity['company_id'])
         response = _SESSION.get(documents_url)
-        try:
-            if entity['company_id'] == 'C 37840':
-                raise FloatingPointError
-        except:
-            with open('error.htm', 'wt') as error:
-                error.write(response.text)
-                break
-
         soup = BeautifulSoup(response.text, 'lxml')
-        offset = 0
-        while True:
-            pass
 
-        # pprint(entity)
-        print()
-        print()
-        print()
+        # Extract the data from the current first
+        document_rows = soup.find('td', text=re.compile('Document In File'), attrs={'class': 'tablehead'})
+        document_rows = document_rows.findParent('tr').findNextSiblings('tr', {'onmouseout': "this.className='pNormal'"})
+        for row in document_rows:
+            row_data = row.findAll('td')
+            row_dict = dict()
+            row_dict['preview'] = row_data[0].find('a')['href']
+            row_dict['preview'] = urljoin(_INDEX_URL, row_dict['preview'])
+            row_dict['date'] = row_data[1].get_text().strip()
+            row_dict['archived'] = row_data[2].get_text().strip()
+            row_dict['document_in_file'] = eval(row_data[3].get_text().strip())
+            row_dict['year'] = row_data[4].get_text().strip()
+            row_dict['comments'] = row_data[5].get_text().strip()
+            row_dict['was_paid'] = row_data[6].get_text().strip()
+            row_dict['purchase__link'] = row_data[1].get_text().strip()
+
+            entity['documents'].append(row_dict)
+
+        pages = soup.find('b', text=re.compile('.*Last Page.*\(.*\).*')).get_text().strip()
+        pages = eval(re.match('.*\((.*)\).*', pages).groups()[0])
+
+        for index in range(1, pages):
+            offset = 20 * index
+            documents_url = _DOCUMENTS_URL_PAGED_TEMPLATE.format(entity['company_id'], offset)
+            response = _SESSION.get(documents_url)
+            soup = BeautifulSoup(response.text, 'lxml')
+
+            # Extract the data from the current first
+            document_rows = soup.find('td', text=re.compile('Document In File'), attrs={'class': 'tablehead'})
+            document_rows = document_rows.findParent('tr').findNextSiblings('tr',
+                                                                            {'onmouseout': "this.className='pNormal'"})
+            for row in document_rows:
+                row_data = row.findAll('td')
+                row_dict = dict()
+                row_dict['preview'] = row_data[0].find('a')['href']
+                row_dict['preview'] = urljoin(_INDEX_URL, row_dict['preview'])
+                row_dict['date'] = row_data[1].get_text().strip()
+                row_dict['archived'] = row_data[2].get_text().strip()
+                row_dict['document_in_file'] = eval(row_data[3].get_text().strip())
+                row_dict['year'] = row_data[4].get_text().strip()
+                row_dict['comments'] = row_data[5].get_text().strip()
+                row_dict['was_paid'] = row_data[6].get_text().strip()
+                row_dict['purchase__link'] = row_data[1].get_text().strip()
+
+                entity['documents'].append(row_dict)
+
+        yield  entity
         index -= 1
         if not index:
             break
@@ -220,11 +254,9 @@ def generate_something():
 
 def main():
 
-    # for entity in generate_extracted_data():
-    #     pprint(entity)
+    for entity in ge():
+        pprint(entity)
 
-    # perform_login()
-    generate_something()
 
 
 if __name__ == '__main__':
