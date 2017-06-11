@@ -66,12 +66,11 @@ def generate_lookup_data():
     # Get the test data from the pickle file
     company_file = open('test_set.log', 'rb')
     entity_list = pickle.load(company_file)
-
+    # pprint(entity_list)
     index = 100
 
     # Navigate to the search url and
     for entity in entity_list:
-        print(index)
         # Perform the search for this entity
         _SESSION.get(_SEARCH_URL)
         params = dict()
@@ -86,7 +85,12 @@ def generate_lookup_data():
             'td',
             text=re.compile('.*Registration Date.*')
         ).findNextSibling('td').get_text().strip()
-        authorised_shares_url = soup.find('a', text=re.compile('.*Authorised Shares.*'))['href']
+
+        if not soup.find('a', text=re.compile('.*Authorised Shares.*')):
+            print(entity['company_id'])
+        else:
+            continue
+
         authorised_shares_url = urljoin(_INDEX_URL, authorised_shares_url)
         response = _SESSION.get(_AUTHORISED_CAPITAL_URL)
         soup = BeautifulSoup(response.text, 'lxml')
@@ -176,7 +180,7 @@ def generate_lookup_data():
                         party_dict['name'] = ''
                         party_dict['party_id'] = ''
 
-                    party_dict['address'] = party_data[1].get_text().strip()
+                    party_dict['address'] = re.sub('\r|\s*', '',party_data[1].get_text().strip())
                     party_dict['nationality'] = party_data[2].get_text().strip()
 
                     # If this party is a shareholder add the details about the shares they hold
@@ -210,7 +214,10 @@ def generate_lookup_data():
             row_dict['preview'] = urljoin(_INDEX_URL, row_dict['preview'])
             row_dict['date'] = row_data[1].get_text().strip()
             row_dict['archived'] = row_data[2].get_text().strip()
-            row_dict['document_in_file'] = eval(row_data[3].get_text().strip())
+            try:
+                row_dict['document_in_file'] = eval(row_data[3].get_text().strip())
+            except NameError:
+                row_dict['document_in_file'] = None
             row_dict['year'] = row_data[4].get_text().strip()
             row_dict['comments'] = row_data[5].get_text().strip()
             row_dict['was_paid'] = row_data[6].get_text().strip()
@@ -218,8 +225,11 @@ def generate_lookup_data():
 
             entity['documents'].append(row_dict)
 
-        pages = soup.find('b', text=re.compile('.*Last Page.*\(.*\).*')).get_text().strip()
-        pages = eval(re.match('.*\((.*)\).*', pages).groups()[0])
+        if soup.find('b', text=re.compile('.*Last Page.*\(.*\).*')):
+            pages = soup.find('b', text=re.compile('.*Last Page.*\(.*\).*')).get_text().strip()
+            pages = eval(re.match('.*\((.*)\).*', pages).groups()[0])
+        else:
+            continue
 
         for index in range(1, pages):
             offset = 20 * index
@@ -232,13 +242,19 @@ def generate_lookup_data():
             document_rows = document_rows.findParent('tr').findNextSiblings('tr',
                                                                             {'onmouseout': "this.className='pNormal'"})
             for row in document_rows:
+
                 row_data = row.findAll('td')
                 row_dict = dict()
                 row_dict['preview'] = row_data[0].find('a')['href']
                 row_dict['preview'] = urljoin(_INDEX_URL, row_dict['preview'])
                 row_dict['date'] = row_data[1].get_text().strip()
                 row_dict['archived'] = row_data[2].get_text().strip()
-                row_dict['document_in_file'] = eval(row_data[3].get_text().strip())
+
+                try:
+                    row_dict['document_in_file'] = eval(row_data[3].get_text().strip())
+                except NameError:
+                    row_dict['document_in_file'] = None
+
                 row_dict['year'] = row_data[4].get_text().strip()
                 row_dict['comments'] = row_data[5].get_text().strip()
                 row_dict['was_paid'] = row_data[6].get_text().strip()
@@ -246,17 +262,18 @@ def generate_lookup_data():
 
                 entity['documents'].append(row_dict)
 
+
         yield  entity
-        index -= 1
-        if not index:
-            break
 
 
 def main():
 
-    for entity in ge():
-        pprint(entity)
-
+    # for entity in generate_lookup_data():
+    #     pprint(entity)
+    #     print()
+    #     print()
+    #     print()
+    generate_lookup_data()
 
 
 if __name__ == '__main__':
