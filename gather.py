@@ -1,9 +1,6 @@
 import json
-import pickle
 import re
 import time
-import requests
-from pprint import pprint
 from bs4 import BeautifulSoup
 from selenium.webdriver import PhantomJS
 
@@ -113,20 +110,10 @@ def main():
     Main function of the script. Handles the execution and output
     """
 
-    # The index part is used to generate a set of results that are to be
-    # used in tests for the lookup script.
-    entity_list = list()
     try:
-        index = 0
         for entity in generate_extracted_data():
-            entity_list.append(entity)
-            index += 1
-            if index == 350:
-                break
+            print(json.dumps(entity))
 
-        pickle_file = open('test_set.log', 'wb')
-        pickle.dump(entity_list, pickle_file)
-        pickle_file.close()
         _BROWSER.close()
     except:
         _BROWSER.close()

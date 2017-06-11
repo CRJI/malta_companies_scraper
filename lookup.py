@@ -12,7 +12,6 @@ from bs4 import BeautifulSoup
 from gather import generate_extracted_data
 from gather import main as gather_main
 
-
 _INDEX_URL = 'http://registry.mfsa.com.mt/index.jsp'
 _LOGIN_URL = 'https://registry.mfsa.com.mt/login.do'
 _LOGON_URL = 'https://registry.mfsa.com.mt/logon.do'
@@ -23,18 +22,17 @@ _AUTHORISED_CAPITAL_URL = 'http://registry.mfsa.com.mt/companyDetailsRO.do?actio
 _DOCUMENTS_URL_TEMPLATE = 'http://registry.mfsa.com.mt/documentsList.do?action=companyDetails&companyId={}'
 _DOCUMENTS_URL_PAGED_TEMPLATE = 'http://registry.mfsa.com.mt/documentsList.do?action=companyDetails&companyId={}&pager.offset={}'
 
-
 _LOGIN_DATA = {
     'username': 'blacksea',
     'password': 'Bugsy11133',
 }
 
-_HEADERS = { 'Accept':'*/*',
-    'Accept-Encoding':'gzip, deflate, sdch',
-    'Accept-Language':'en-US,en;q=0.8',
-    'Cache-Control':'max-age=0',
-    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'
-}
+_HEADERS = {'Accept': '*/*',
+            'Accept-Encoding': 'gzip, deflate, sdch',
+            'Accept-Language': 'en-US,en;q=0.8',
+            'Cache-Control': 'max-age=0',
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'
+            }
 
 _SESSION = requests.Session()
 
@@ -45,7 +43,6 @@ def generate_lookup_data():
     For each company gather the
     :return:
     """
-
 
     _SESSION.headers.update(_HEADERS)
     _SESSION.get(_INDEX_URL)
@@ -63,14 +60,8 @@ def generate_lookup_data():
 
     _SESSION.post(_LOGON_URL, data=params)
 
-    # Get the test data from the pickle file
-    company_file = open('test_set.log', 'rb')
-    entity_list = pickle.load(company_file)
-    # pprint(entity_list)
-    index = 100
-
     # Navigate to the search url and
-    for entity in entity_list:
+    for entity in generate_extracted_data():
         # Perform the search for this entity
         _SESSION.get(_SEARCH_URL)
         params = dict()
@@ -94,10 +85,12 @@ def generate_lookup_data():
             # Extract general data about the issued and authorised shares
             entity['authorised_shares'] = list()
             entity['total_authorised_shares'] = soup.find('td', text=re.compile('.*Total No\. of Authorised Shares.*'))
-            entity['total_authorised_shares'] = entity['total_authorised_shares'].findNextSibling('td').get_text().strip()
+            entity['total_authorised_shares'] = entity['total_authorised_shares'].findNextSibling(
+                'td').get_text().strip()
             entity['total_authorised_shares'] = re.sub('\s+|\n', ' ', entity['total_authorised_shares']).strip()
             entity['total_authorised_shares'] = re.sub(',', '', entity['total_authorised_shares']).strip()
-            entity['total_authorised_shares_value'] = re.match('.*\(.*?([0-9\.]+).*\).*', entity['total_authorised_shares'])
+            entity['total_authorised_shares_value'] = re.match('.*\(.*?([0-9\.]+).*\).*',
+                                                               entity['total_authorised_shares'])
             entity['total_authorised_shares_value'] = eval(entity['total_authorised_shares_value'].groups()[0].strip())
             entity['total_authorised_shares'] = eval(re.sub('\(.*\).*', '', entity['total_authorised_shares']))
             entity['total_issued_shares'] = soup.find('td', text=re.compile('.*Total No\. of Issued Shares.*'))
@@ -175,18 +168,21 @@ def generate_lookup_data():
                         party_dict['name'] = ''
                         party_dict['party_id'] = ''
 
-                    party_dict['address'] = re.sub('\r|\s*', '',party_data[1].get_text().strip())
+                    party_dict['address'] = re.sub('\r|\s*', '', party_data[1].get_text().strip())
                     party_dict['nationality'] = party_data[2].get_text().strip()
 
                     # If this party is a shareholder add the details about the shares they hold
                     if section.lower() == 'shareholders':
                         party_dict['shares'] = dict()
-                        shares_data = party.findNext('td', text=re.compile('.*Shares.*'), attrs={'class': 'tableHeadDark'})
-                        shares_data = shares_data.findNext('td', {'class': 'tablehead'}).findParent('tr').findNextSibling('tr')
+                        shares_data = party.findNext('td', text=re.compile('.*Shares.*'),
+                                                     attrs={'class': 'tableHeadDark'})
+                        shares_data = shares_data.findNext('td', {'class': 'tablehead'}).findParent(
+                            'tr').findNextSibling('tr')
                         shares_data = shares_data.findAll('td')
                         party_dict['shares']['type'] = shares_data[0].get_text().strip()
                         party_dict['shares']['class'] = shares_data[1].get_text().strip()
-                        party_dict['shares']['issued_shares'] = re.sub(',', '', shares_data[2].get_text().strip()).strip()
+                        party_dict['shares']['issued_shares'] = re.sub(',', '',
+                                                                       shares_data[2].get_text().strip()).strip()
                         party_dict['shares']['issued_shares'] = eval(party_dict['shares']['issued_shares'])
                         party_dict['shares']['paid_up_%'] = eval(shares_data[3].get_text().strip())
                         party_dict['shares']['nominal_value_per_share'] = eval(shares_data[4].get_text().strip())
@@ -201,7 +197,8 @@ def generate_lookup_data():
 
         # Extract the data from the current first
         document_rows = soup.find('td', text=re.compile('Document In File'), attrs={'class': 'tablehead'})
-        document_rows = document_rows.findParent('tr').findNextSiblings('tr', {'onmouseout': "this.className='pNormal'"})
+        document_rows = document_rows.findParent('tr').findNextSiblings('tr',
+                                                                        {'onmouseout': "this.className='pNormal'"})
         for row in document_rows:
             row_data = row.findAll('td')
             row_dict = dict()
@@ -209,10 +206,13 @@ def generate_lookup_data():
             row_dict['preview'] = urljoin(_INDEX_URL, row_dict['preview'])
             row_dict['date'] = row_data[1].get_text().strip()
             row_dict['archived'] = row_data[2].get_text().strip()
-            try:
-                row_dict['document_in_file'] = eval(row_data[3].get_text().strip())
-            except NameError:
+            row_dict['document_in_file'] = row_data[3].get_text().strip()
+
+            if row_dict['document_in_file'] == 'NA':
                 row_dict['document_in_file'] = None
+            else:
+                row_dict['document_in_file'] = eval(row_dict['document_in_file'])
+
             row_dict['year'] = row_data[4].get_text().strip()
             row_dict['comments'] = row_data[5].get_text().strip()
             row_dict['was_paid'] = row_data[6].get_text().strip()
@@ -244,11 +244,11 @@ def generate_lookup_data():
                 row_dict['preview'] = urljoin(_INDEX_URL, row_dict['preview'])
                 row_dict['date'] = row_data[1].get_text().strip()
                 row_dict['archived'] = row_data[2].get_text().strip()
-
-                try:
-                    row_dict['document_in_file'] = eval(row_data[3].get_text().strip())
-                except NameError:
+                row_dict['document_in_file'] = row_data[3].get_text().strip()
+                if row_dict['document_in_file'] == 'NA':
                     row_dict['document_in_file'] = None
+                else:
+                    row_dict['document_in_file'] = eval(row_dict['document_in_file'])
 
                 row_dict['year'] = row_data[4].get_text().strip()
                 row_dict['comments'] = row_data[5].get_text().strip()
@@ -257,22 +257,18 @@ def generate_lookup_data():
 
                 entity['documents'].append(row_dict)
 
-
-        yield  entity
-        index -= 1
-        if not index:
-            break
+        yield entity
+        time.sleep(5)
 
 
 def main():
 
     for entity in generate_lookup_data():
+        # print(json.dumps(entity))
         pprint(entity)
         print()
         print()
         print()
-    # generate_lookup_data()
-
 
 if __name__ == '__main__':
     main()
