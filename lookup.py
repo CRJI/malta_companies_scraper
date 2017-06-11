@@ -86,59 +86,54 @@ def generate_lookup_data():
             text=re.compile('.*Registration Date.*')
         ).findNextSibling('td').get_text().strip()
 
-        if not soup.find('a', text=re.compile('.*Authorised Shares.*')):
-            print(entity['company_id'])
-        else:
-            continue
+        if soup.find('a', text=re.compile('.*Authorised Shares.*')):
 
-        authorised_shares_url = urljoin(_INDEX_URL, authorised_shares_url)
-        response = _SESSION.get(_AUTHORISED_CAPITAL_URL)
-        soup = BeautifulSoup(response.text, 'lxml')
+            response = _SESSION.get(_AUTHORISED_CAPITAL_URL)
+            soup = BeautifulSoup(response.text, 'lxml')
 
-        # Extract general data about the issued and authorised shares
-        entity['authorised_shares'] = list()
-        entity['total_authorised_shares'] = soup.find('td', text=re.compile('.*Total No\. of Authorised Shares.*'))
-        entity['total_authorised_shares'] = entity['total_authorised_shares'].findNextSibling('td').get_text().strip()
-        entity['total_authorised_shares'] = re.sub('\s+|\n', ' ', entity['total_authorised_shares']).strip()
-        entity['total_authorised_shares'] = re.sub(',', '', entity['total_authorised_shares']).strip()
-        entity['total_authorised_shares_value'] = re.match('.*\(.*?([0-9\.]+).*\).*', entity['total_authorised_shares'])
-        entity['total_authorised_shares_value'] = eval(entity['total_authorised_shares_value'].groups()[0].strip())
-        entity['total_authorised_shares'] = eval(re.sub('\(.*\).*', '', entity['total_authorised_shares']))
-        entity['total_issued_shares'] = soup.find('td', text=re.compile('.*Total No\. of Issued Shares.*'))
-        entity['total_issued_shares'] = entity['total_issued_shares'].findNextSibling('td').get_text().strip()
-        entity['total_issued_shares'] = re.sub('\s+|\n', ' ', entity['total_issued_shares']).strip()
-        entity['total_issued_shares'] = re.sub(',', '', entity['total_issued_shares']).strip()
-        entity['total_issued_shares_value'] = re.match('.*\(.*?([0-9\.]+).*\).*', entity['total_issued_shares'])
-        entity['total_issued_shares_value'] = eval(entity['total_issued_shares_value'].groups()[0].strip())
-        entity['total_issued_shares'] = eval(re.sub('\(.*\).*', '', entity['total_issued_shares']))
-        entity['authorised_shares'] = list()
-        table_rows = soup.find('td', text=re.compile('.*Nominal Value Per Share in .*'))
-        currency = re.match('.*Nominal Value Per Share in (.*)', table_rows.get_text().strip())
-        currency = currency.groups()[0].strip()
-        entity['shares_currency'] = currency
+            # Extract general data about the issued and authorised shares
+            entity['authorised_shares'] = list()
+            entity['total_authorised_shares'] = soup.find('td', text=re.compile('.*Total No\. of Authorised Shares.*'))
+            entity['total_authorised_shares'] = entity['total_authorised_shares'].findNextSibling('td').get_text().strip()
+            entity['total_authorised_shares'] = re.sub('\s+|\n', ' ', entity['total_authorised_shares']).strip()
+            entity['total_authorised_shares'] = re.sub(',', '', entity['total_authorised_shares']).strip()
+            entity['total_authorised_shares_value'] = re.match('.*\(.*?([0-9\.]+).*\).*', entity['total_authorised_shares'])
+            entity['total_authorised_shares_value'] = eval(entity['total_authorised_shares_value'].groups()[0].strip())
+            entity['total_authorised_shares'] = eval(re.sub('\(.*\).*', '', entity['total_authorised_shares']))
+            entity['total_issued_shares'] = soup.find('td', text=re.compile('.*Total No\. of Issued Shares.*'))
+            entity['total_issued_shares'] = entity['total_issued_shares'].findNextSibling('td').get_text().strip()
+            entity['total_issued_shares'] = re.sub('\s+|\n', ' ', entity['total_issued_shares']).strip()
+            entity['total_issued_shares'] = re.sub(',', '', entity['total_issued_shares']).strip()
+            entity['total_issued_shares_value'] = re.match('.*\(.*?([0-9\.]+).*\).*', entity['total_issued_shares'])
+            entity['total_issued_shares_value'] = eval(entity['total_issued_shares_value'].groups()[0].strip())
+            entity['total_issued_shares'] = eval(re.sub('\(.*\).*', '', entity['total_issued_shares']))
+            entity['authorised_shares'] = list()
+            table_rows = soup.find('td', text=re.compile('.*Nominal Value Per Share in .*'))
+            currency = re.match('.*Nominal Value Per Share in (.*)', table_rows.get_text().strip())
+            currency = currency.groups()[0].strip()
+            entity['shares_currency'] = currency
 
-        table_rows = table_rows.findParent('table').findAll('tr')
+            table_rows = table_rows.findParent('table').findAll('tr')
 
-        # If there is info about the issued shares extract each line and add it to the list
-        if len(table_rows) > 1:
-            for row in table_rows[1:]:
-                row_data = row.select('td')
-                share = dict()
-                share['authorised_share_capital'] = re.sub(',', '', row_data[0].get_text().strip())
-                share['authorised_share_capital'] = eval(share['authorised_share_capital'])
-                share['type'] = re.sub('\s*', '', row_data[1].get_text().strip())
-                share['nominal_value_per_share'] = eval(row_data[2].get_text().strip())
-                share['issued_shares'] = re.sub(',', '', row_data[3].get_text().strip())
-                share['issued_shares'] = eval(share['issued_shares'])
-                entity['authorised_shares'].append(share)
-
-        # Extract the data about the involved parties
-        entity['involved_parties'] = dict()
+            # If there is info about the issued shares extract each line and add it to the list
+            if len(table_rows) > 1:
+                for row in table_rows[1:]:
+                    row_data = row.select('td')
+                    share = dict()
+                    share['authorised_share_capital'] = re.sub(',', '', row_data[0].get_text().strip())
+                    share['authorised_share_capital'] = eval(share['authorised_share_capital'])
+                    share['type'] = re.sub('\s*', '', row_data[1].get_text().strip())
+                    share['nominal_value_per_share'] = eval(row_data[2].get_text().strip())
+                    share['issued_shares'] = re.sub(',', '', row_data[3].get_text().strip())
+                    share['issued_shares'] = eval(share['issued_shares'])
+                    entity['authorised_shares'].append(share)
 
         # Load the involved parties page
         response = _SESSION.get(_INVOLVED_PARTIES_URL)
         soup = BeautifulSoup(response.text, 'lxml')
 
+        # Extract the data about the involved parties
+        entity['involved_parties'] = dict()
         tables = soup.findAll('td', {'class': 'tableheadDark', 'colspan': '3'})
 
         # Separate the big table into definite sections
@@ -264,16 +259,19 @@ def generate_lookup_data():
 
 
         yield  entity
+        index -= 1
+        if not index:
+            break
 
 
 def main():
 
-    # for entity in generate_lookup_data():
-    #     pprint(entity)
-    #     print()
-    #     print()
-    #     print()
-    generate_lookup_data()
+    for entity in generate_lookup_data():
+        pprint(entity)
+        print()
+        print()
+        print()
+    # generate_lookup_data()
 
 
 if __name__ == '__main__':
