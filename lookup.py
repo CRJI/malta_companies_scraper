@@ -17,7 +17,10 @@ _SEARCH_URL = 'http://registry.mfsa.com.mt/companiesReport.do?action=companyDeta
 _INVOLVED_PARTIES_URL = 'http://registry.mfsa.com.mt/companyDetailsRO.do?action=involvementList'
 _AUTHORISED_CAPITAL_URL = 'http://registry.mfsa.com.mt/companyDetailsRO.do?action=authorisedCapital'
 _DOCUMENTS_URL_TEMPLATE = 'http://registry.mfsa.com.mt/documentsList.do?action=companyDetails&companyId={}'
-_DOCUMENTS_URL_PAGED_TEMPLATE = 'http://registry.mfsa.com.mt/documentsList.do?action=companyDetails&companyId={}&pager.offset={}'
+_DOCUMENTS_URL_PAGED_TEMPLATE = (
+                                    'http://registry.mfsa.com.mt/documentsList'
+                                    '.do?action=companyDetails&companyId={}&pager.offset={}'
+                                )
 
 _LOGIN_DATA = {
     'username': 'blacksea',
@@ -28,7 +31,10 @@ _HEADERS = {'Accept': '*/*',
             'Accept-Encoding': 'gzip, deflate, sdch',
             'Accept-Language': 'en-US,en;q=0.8',
             'Cache-Control': 'max-age=0',
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'
+            'User-Agent': (
+                'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
+                ' (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'
+            )
             }
 
 _SESSION = requests.Session()
@@ -66,6 +72,8 @@ def session_request(url, entity=None, get_response=True, rtype=None, params=None
     global _MAX_REQUESTS, _SESSION
 
     def request(url, get_response=True, rtype=None, params=None):
+
+        response = None
 
         if rtype == 'post' and params:
             response = _SESSION.post(url, data=params)
@@ -296,11 +304,18 @@ def generate_lookup_data():
         for index in range(1, pages):
             offset = 20 * index
             documents_url = _DOCUMENTS_URL_PAGED_TEMPLATE.format(entity['company_id'], offset)
-            response = session_request(documents_url, entity=entity)
-            soup = BeautifulSoup(response.text, 'lxml')
 
-            # Extract the data from the current first
-            document_rows = soup.find('td', text=re.compile('Document In File'), attrs={'class': 'tablehead'})
+            while True:
+                response = session_request(documents_url, entity=entity)
+                soup = BeautifulSoup(response.text, 'lxml')
+
+                # Extract the data from the current first
+                document_rows = soup.find('td', text=re.compile('Document In File'), attrs={'class': 'tablehead'})
+                if document_rows:
+                    break
+                else:
+                    time.sleep(3)
+
             document_rows = document_rows.findParent('tr').findNextSiblings('tr',
                                                                             {'onmouseout': "this.className='pNormal'"})
             for row in document_rows:
