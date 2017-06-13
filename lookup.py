@@ -336,10 +336,7 @@ def main():
 
     for entity in generate_lookup_data():
         print(json.dumps(entity))
-        # pprint(entity)
-        print()
-        print()
-        print()
+
 
 if __name__ == '__main__':
     main()
