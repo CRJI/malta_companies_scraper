@@ -36,14 +36,18 @@ _HEADERS = {'Accept': '*/*',
 
 _SESSION = requests.Session()
 
+_MAX_REQUESTS = 10000
 
-def generate_lookup_data():
-    """
-    Login and go to the search page. There perform the search based on the company id.
-    For each company gather the
-    :return:
-    """
 
+def relogin():
+    """
+    Self explanatory
+    """
+    global _SESSION
+
+    _SESSION.close()
+    time.sleep(5)
+    _SESSION = requests.Session()
     _SESSION.headers.update(_HEADERS)
     _SESSION.get(_INDEX_URL)
 
@@ -60,17 +64,79 @@ def generate_lookup_data():
 
     _SESSION.post(_LOGON_URL, data=params)
 
-    # Navigate to the search url and
-    for entity in generate_extracted_data():
-        # Perform the search for this entity
-        _SESSION.get(_SEARCH_URL)
+
+def session_request(url, entity=None, get_respnse=True, type=None, params=None):
+    global _MAX_REQUESTS, _SESSION
+
+    def request(url, entity=None, get_respnse=True, type=None, params=None):
+        global _MAX_REQUESTS
+
+        _MAX_REQUESTS -= 1
+        if type == 'post' and params:
+            response = _SESSION.post(url, data=params)
+
+        elif not params and type == 'post':
+            raise ValueError('params argument must be provided when performing a post request')
+
+        elif not type:
+            response = _SESSION.get(url)
+
+        if get_respnse:
+            return response
+
+    if _MAX_REQUESTS:
+        return request(url, entity=entity, get_respnse=get_respnse, type=type, params=params)
+    else:
+        time.sleep(10)
+        relogin()
+        request(_SEARCH_URL, get_respnse=False)
         params = dict()
         params['companyId'] = entity['company_id']
         params['companyName'] = ''
         params['companyNameComplexCombination'] = 'on'
         params['search.x'] = str(randint(10, 81))
         params['search.y'] = str(randint(4, 15))
-        response = _SESSION.post(_SEARCH_URL, data=params)
+        request(_SEARCH_URL, type='post', params=params, get_respnse=False)
+        response = request(url, entity=entity, get_respnse=get_respnse, type=type, params=params)
+        if get_respnse:
+            return response
+
+
+def generate_lookup_data():
+    """
+    Login and go to the search page. There perform the search based on the company id.
+    For each company gather the
+    :return:
+    """
+
+    _SESSION.headers.update(_HEADERS)
+    session_request(_INDEX_URL, get_respnse=False)
+
+    # Perform login
+    response = session_request(_LOGIN_URL)
+    soup = BeautifulSoup(response.text, 'lxml')
+
+    # Instantiate a params dict and add the token, login data, and mouse position on the logon
+    params = dict()
+    params['token'] = soup.find('input', {'name': 'org.apache.struts.taglib.html.TOKEN'})['value']
+    params.update(_LOGIN_DATA)
+    params['logon.x'] = '45'
+    params['logon.y'] = '10'
+
+    session_request(_LOGON_URL, get_respnse=False, type='post', params=params)
+
+    # Navigate to the search url and
+    for entity in generate_extracted_data():
+        # Perform the search for this entity
+        session_request(_SEARCH_URL)
+        params = dict()
+        params['companyId'] = entity['company_id']
+        params['companyName'] = ''
+        params['companyNameComplexCombination'] = 'on'
+        params['search.x'] = str(randint(10, 81))
+        params['search.y'] = str(randint(4, 15))
+        response = session_request(_SEARCH_URL, type='post', params=params)
+
         soup = BeautifulSoup(response.text, 'lxml')
         entity['registration_date'] = soup.find(
             'td',
@@ -79,7 +145,7 @@ def generate_lookup_data():
 
         if soup.find('a', text=re.compile('.*Authorised Shares.*')):
 
-            response = _SESSION.get(_AUTHORISED_CAPITAL_URL)
+            response = session_request(_AUTHORISED_CAPITAL_URL)
             soup = BeautifulSoup(response.text, 'lxml')
 
             # Extract general data about the issued and authorised shares
@@ -122,7 +188,7 @@ def generate_lookup_data():
                     entity['authorised_shares'].append(share)
 
         # Load the involved parties page
-        response = _SESSION.get(_INVOLVED_PARTIES_URL)
+        response = session_request(_INVOLVED_PARTIES_URL)
         soup = BeautifulSoup(response.text, 'lxml')
 
         # Extract the data about the involved parties
@@ -192,11 +258,16 @@ def generate_lookup_data():
         # Gather the data about all the documents
         entity['documents'] = list()
         documents_url = _DOCUMENTS_URL_TEMPLATE.format(entity['company_id'])
-        response = _SESSION.get(documents_url)
+        response = session_request(documents_url)
         soup = BeautifulSoup(response.text, 'lxml')
 
         # Extract the data from the current first
         document_rows = soup.find('td', text=re.compile('Document In File'), attrs={'class': 'tablehead'})
+        if not document_rows:
+            response = session_request(documents_url)
+            soup = BeautifulSoup(response.text, 'lxml')
+            document_rows = soup.find('td', text=re.compile('Document In File'), attrs={'class': 'tablehead'})
+
         document_rows = document_rows.findParent('tr').findNextSiblings('tr',
                                                                         {'onmouseout': "this.className='pNormal'"})
         for row in document_rows:
@@ -229,7 +300,7 @@ def generate_lookup_data():
         for index in range(1, pages):
             offset = 20 * index
             documents_url = _DOCUMENTS_URL_PAGED_TEMPLATE.format(entity['company_id'], offset)
-            response = _SESSION.get(documents_url)
+            response = session_request(documents_url)
             soup = BeautifulSoup(response.text, 'lxml')
 
             # Extract the data from the current first
@@ -264,8 +335,8 @@ def generate_lookup_data():
 def main():
 
     for entity in generate_lookup_data():
-        # print(json.dumps(entity))
-        pprint(entity)
+        print(json.dumps(entity))
+        # pprint(entity)
         print()
         print()
         print()
