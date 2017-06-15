@@ -56,6 +56,10 @@ def relogin():
     """
     global _SESSION
 
+
+    proxy = eval(proxy_generator.__next__())
+    _PROXIES['https'] = proxy['string']
+
     _SESSION.close()
     time.sleep(5)
     _SESSION = requests.Session()
