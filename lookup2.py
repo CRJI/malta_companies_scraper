@@ -39,7 +39,15 @@ _HEADERS = {'Accept': '*/*',
 
 _SESSION = requests.Session()
 
-_MAX_REQUESTS = 10000
+_MAX_REQUESTS = 100000
+
+_PROXIES = {
+    'https': ''
+}
+
+
+_PROXY_LIST = open('proxy_list.txt')
+_PROXY_GENERATOR = (proxy for proxy in itertools.cycle(_PROXY_LIST))
 
 
 def relogin():
@@ -52,10 +60,10 @@ def relogin():
     time.sleep(5)
     _SESSION = requests.Session()
     _SESSION.headers.update(_HEADERS)
-    _SESSION.get(_INDEX_URL)
+    _SESSION.get(_INDEX_URL, timeout=3.0, proxies=_PROXIES)
 
     # Perform login
-    response = _SESSION.get(_LOGIN_URL)
+    response = _SESSION.get(_LOGIN_URL, timeout=3.0, proxies=_PROXIES)
     soup = BeautifulSoup(response.text, 'lxml')
 
     # Instantiate a params dict and add the token, login data, and mouse position on the logon button
@@ -65,7 +73,7 @@ def relogin():
     params['logon.x'] = '45'
     params['logon.y'] = '10'
 
-    _SESSION.post(_LOGON_URL, data=params)
+    _SESSION.post(_LOGON_URL, data=params, proxies=_PROXIES)
 
 
 def session_request(url, entity=None, get_response=True, rtype=None, params=None):
@@ -74,15 +82,22 @@ def session_request(url, entity=None, get_response=True, rtype=None, params=None
     def request(url, get_response=True, rtype=None, params=None):
 
         response = None
+        retry = 0
+        while retry < 5:
+            try:
+                if rtype == 'post' and params:
+                    response = _SESSION.post(url, data=params, timeout=3.0, proxies=_PROXIES)
 
-        if rtype == 'post' and params:
-            response = _SESSION.post(url, data=params)
+                elif not params and rtype == 'post':
+                    raise ValueError('params argument must be provided when performing a post request')
 
-        elif not params and rtype == 'post':
-            raise ValueError('params argument must be provided when performing a post request')
+                elif not rtype:
+                    response = _SESSION.get(url, timeout=3.0, proxies=_PROXIES)
 
-        elif not rtype:
-            response = _SESSION.get(url)
+                break
+            except:
+                retry += 1
+                time.sleep(2)
 
         if get_response:
             return response
@@ -91,16 +106,19 @@ def session_request(url, entity=None, get_response=True, rtype=None, params=None
         _MAX_REQUESTS -= 1
         return request(url, get_response=get_response, rtype=rtype, params=params)
     else:
-        time.sleep(10)
+        time.sleep(5)
         relogin()
-        request(_SEARCH_URL, get_response=False)
+        if not request(_SEARCH_URL):
+            return None
+
         params = dict()
         params['companyId'] = entity['company_id']
         params['companyName'] = ''
         params['companyNameComplexCombination'] = 'on'
         params['search.x'] = str(randint(10, 81))
         params['search.y'] = str(randint(4, 15))
-        request(_SEARCH_URL, rtype='post', params=params, get_response=False)
+        if not request(_SEARCH_URL, rtype='post', params=params):
+            return None
         response = request(url, get_response=get_response, rtype=rtype, params=params)
         if get_response:
             return response
@@ -129,11 +147,12 @@ def generate_lookup_data():
 
     session_request(_LOGON_URL, get_response=False, rtype='post', params=params)
 
-    entity_list = open('gather.json', 'r').read()
+    entity_list = open('gather.json2', 'r').read()
     entity_list = eval(entity_list)
 
     # Navigate to the search url and
     for entity in entity_list:
+        # print(entity['company_id'])
         # Perform the search for this entity
         session_request(_SEARCH_URL, entity=entity)
         params = dict()
@@ -142,8 +161,12 @@ def generate_lookup_data():
         params['companyNameComplexCombination'] = 'on'
         params['search.x'] = str(randint(10, 81))
         params['search.y'] = str(randint(4, 15))
+
         response = session_request(_SEARCH_URL, entity=entity, rtype='post', params=params)
 
+        if not response:
+            continue
+            
         soup = BeautifulSoup(response.text, 'lxml')
         entity['registration_date'] = soup.find(
             'td',
@@ -196,84 +219,92 @@ def generate_lookup_data():
 
         # Load the involved parties page
         response = session_request(_INVOLVED_PARTIES_URL, entity=entity)
-        soup = BeautifulSoup(response.text, 'lxml')
-
-        # Extract the data about the involved parties
-        entity['involved_parties'] = dict()
-        tables = soup.findAll('td', {'class': 'tableheadDark', 'colspan': '3'})
-
-        # Separate the big table into definite sections
-        sections = dict()
-        for table in tables:
-            section = re.match('\s*(.*?)\(.*\).*', table.get_text().strip()).groups()[0]
-            entity['involved_parties'][section] = list()
-            sections[section] = list()
-            table = table.findParent('tr')
-
-            for party in table.findNextSiblings():
-                if party.find('hr'):
-                    break
-
-                sections[section].append(party)
-
-        # Extract the data from each section
-        for section, involved_parties in sections.items():
-            for party in involved_parties:
-                # If the row is empty skip it
-                if not party.get_text().strip():
-                    continue
-
-                # If this is a table head also skip it
-                if party.find('td', {'class': 'tablehead'}):
-                    continue
-
-                if party.find('tr', {'onmouseout': "this.className='pNormal'"}):
-                    party_dict = dict()
-                    party_data = party.findAll('td')
-                    party_dict['name'] = party_data[0].get_text().strip()
-                    party_dict['name'] = re.split('\n', party_dict['name'])
-                    if len(party_dict['name']) > 1:
-                        party_dict['name'], party_dict['party_id'] = party_dict['name'][0], party_dict['name'][1]
-                    elif len(party_dict['name']) == 1:
-                        party_dict['name'] = party_dict['name'][0]
-                        party_dict['party_id'] = ''
-                    else:
-                        party_dict['name'] = ''
-                        party_dict['party_id'] = ''
-
-                    party_dict['address'] = re.sub('\r|\s*', '', party_data[1].get_text().strip())
-                    party_dict['nationality'] = party_data[2].get_text().strip()
-
-                    # If this party is a shareholder add the details about the shares they hold
-                    if section.lower() == 'shareholders':
-                        party_dict['shares'] = dict()
-                        shares_data = party.findNext('td', text=re.compile('.*Shares.*'),
-                                                     attrs={'class': 'tableHeadDark'})
-                        shares_data = shares_data.findNext('td', {'class': 'tablehead'}).findParent(
-                            'tr').findNextSibling('tr')
-                        shares_data = shares_data.findAll('td')
-                        party_dict['shares']['type'] = shares_data[0].get_text().strip()
-                        party_dict['shares']['class'] = shares_data[1].get_text().strip()
-                        party_dict['shares']['issued_shares'] = re.sub(',', '',
-                                                                       shares_data[2].get_text().strip()).strip()
-                        party_dict['shares']['issued_shares'] = eval(party_dict['shares']['issued_shares'])
-                        party_dict['shares']['paid_up_%'] = eval(shares_data[3].get_text().strip())
-                        party_dict['shares']['nominal_value_per_share'] = eval(shares_data[4].get_text().strip())
-
-                    entity['involved_parties'][section].append(party_dict)
+        
+        if response:
+            soup = BeautifulSoup(response.text, 'lxml')
+    
+            # Extract the data about the involved parties
+            entity['involved_parties'] = dict()
+            tables = soup.findAll('td', {'class': 'tableheadDark', 'colspan': '3'})
+    
+            # Separate the big table into definite sections
+            sections = dict()
+            for table in tables:
+                section = re.match('\s*(.*?)\(.*\).*', table.get_text().strip()).groups()[0]
+                entity['involved_parties'][section] = list()
+                sections[section] = list()
+                table = table.findParent('tr')
+    
+                for party in table.findNextSiblings():
+                    if party.find('hr'):
+                        break
+    
+                    sections[section].append(party)
+    
+            # Extract the data from each section
+            for section, involved_parties in sections.items():
+                for party in involved_parties:
+                    # If the row is empty skip it
+                    if not party.get_text().strip():
+                        continue
+    
+                    # If this is a table head also skip it
+                    if party.find('td', {'class': 'tablehead'}):
+                        continue
+    
+                    if party.find('tr', {'onmouseout': "this.className='pNormal'"}):
+                        party_dict = dict()
+                        party_data = party.findAll('td')
+                        party_dict['name'] = party_data[0].get_text().strip()
+                        party_dict['name'] = re.split('\n', party_dict['name'])
+                        if len(party_dict['name']) > 1:
+                            party_dict['name'], party_dict['party_id'] = party_dict['name'][0], party_dict['name'][1]
+                        elif len(party_dict['name']) == 1:
+                            party_dict['name'] = party_dict['name'][0]
+                            party_dict['party_id'] = ''
+                        else:
+                            party_dict['name'] = ''
+                            party_dict['party_id'] = ''
+    
+                        party_dict['address'] = re.sub('\r|\s*', '', party_data[1].get_text().strip())
+                        party_dict['nationality'] = party_data[2].get_text().strip()
+    
+                        # If this party is a shareholder add the details about the shares they hold
+                        if section.lower() == 'shareholders':
+                            party_dict['shares'] = dict()
+                            shares_data = party.findNext('td', text=re.compile('.*Shares.*'),
+                                                         attrs={'class': 'tableHeadDark'})
+                            shares_data = shares_data.findNext('td', {'class': 'tablehead'}).findParent(
+                                'tr').findNextSibling('tr')
+                            shares_data = shares_data.findAll('td')
+                            party_dict['shares']['type'] = shares_data[0].get_text().strip()
+                            party_dict['shares']['class'] = shares_data[1].get_text().strip()
+                            party_dict['shares']['issued_shares'] = re.sub(',', '',
+                                                                           shares_data[2].get_text().strip()).strip()
+                            party_dict['shares']['issued_shares'] = eval(party_dict['shares']['issued_shares'])
+                            party_dict['shares']['paid_up_%'] = eval(shares_data[3].get_text().strip())
+                            party_dict['shares']['nominal_value_per_share'] = eval(shares_data[4].get_text().strip())
+    
+                        entity['involved_parties'][section].append(party_dict)
 
         # Gather the data about all the documents
         entity['documents'] = list()
+
         documents_url = _DOCUMENTS_URL_TEMPLATE.format(entity['company_id'])
         response = session_request(documents_url, entity=entity)
+        if not response:
+            yield entity
+            continue
+
         soup = BeautifulSoup(response.text, 'lxml')
 
         # Extract the data from the current first
         document_rows = soup.find('td', text=re.compile('Document In File'), attrs={'class': 'tablehead'})
+
+
         if not document_rows:
-            response = session_request(documents_url, entity=entity)
-            soup = BeautifulSoup(response.text, 'lxml')
-            document_rows = soup.find('td', text=re.compile('Document In File'), attrs={'class': 'tablehead'})
+            yield entity
+            continue
 
         document_rows = document_rows.findParent('tr').findNextSiblings('tr',
                                                                         {'onmouseout': "this.className='pNormal'"})
@@ -308,16 +339,20 @@ def generate_lookup_data():
             offset = 20 * index
             documents_url = _DOCUMENTS_URL_PAGED_TEMPLATE.format(entity['company_id'], offset)
 
-            while True:
+            document_rows = None
+            retry = 0
+            while retry < 5:
                 response = session_request(documents_url, entity=entity)
                 soup = BeautifulSoup(response.text, 'lxml')
 
-                # Extract the data from the current first
+                # Extract the data from the current page
                 document_rows = soup.find('td', text=re.compile('Document In File'), attrs={'class': 'tablehead'})
+                retry += 1
                 if document_rows:
                     break
-                else:
-                    time.sleep(3)
+
+            if not document_rows:
+                break
 
             document_rows = document_rows.findParent('tr').findNextSiblings('tr',
                                                                             {'onmouseout': "this.className='pNormal'"})
@@ -343,13 +378,13 @@ def generate_lookup_data():
                 entity['documents'].append(row_dict)
 
         yield entity
-        time.sleep(5)
 
 
 def main():
 
     for entity in generate_lookup_data():
-        file_name = 'output/{}.json'.format(entity['company_id'])
+        _id = ''.join(s.title() for s in re.findall('[A-Za-z0-9]+', entity['company_id']))
+        file_name = 'output/{}.json'.format(_id)
         with open(file_name, 'wt') as jfile:
             jfile.write(json.dumps(entity))
 
