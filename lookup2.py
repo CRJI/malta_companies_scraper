@@ -1,3 +1,4 @@
+import itertools
 import json
 import re
 import time
