@@ -111,8 +111,12 @@ def main():
     """
 
     try:
+        entity_list = list()
         for entity in generate_extracted_data():
-            print(json.dumps(entity))
+            entity_list.append(entity)
+
+        with open('gather.json', 'wt') as gather:
+            gather.write(json.dumps(entity_list))
 
         _BROWSER.close()
     except:

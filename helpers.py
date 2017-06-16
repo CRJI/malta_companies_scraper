@@ -1,7 +1,10 @@
 import itertools
+import json
 import linecache
 import requests
 
+from platform import system as system_name # Returns the system/OS name
+from os import system as system_call       # Execute a shell command
 
 # Set the maximum number of retries per request before giving up on the request
 _MAX_RETRIES = 4
@@ -25,6 +28,31 @@ _REQUEST_SUCCESS = 200
 _PROXIES = {
     'https': ''
 }
+
+
+def ping_host(host):
+
+    """
+    Returns True if host (str) responds to a ping request.
+    Remember that some hosts may not respond to a ping request even if the host name is valid.
+    """
+
+    # Ping parameters as function of OS
+    parameters = "-n 1" if system_name().lower() == "windows" else "-c 1"
+
+    # Pinging
+    return system_call("ping " + parameters + " " + host) == 0
+
+
+def check_proxies():
+    proxy_list = [eval(proxy) for proxy in open('proxy_list.txt').readlines() if proxy]
+    for index, proxy in enumerate(proxy_list):
+        proxy_list[index]['active'] = 0
+        if ping_host(proxy['ip']):
+            proxy_list[index]['active'] = 1
+
+    with open('proxy_list.txt', 'w') as proxy_write:
+        proxy_write.write(json.dumps(proxy_list))
 
 
 def perform_request(url):
