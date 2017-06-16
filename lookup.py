@@ -1,4 +1,3 @@
-import itertools
 import json
 import os
 import re
@@ -6,13 +5,10 @@ import time
 import requests
 
 from random import randint
-from socket import timeout
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
-from requests.exceptions import ConnectionError, ProxyError, HTTPError
-from requests.exceptions import ConnectTimeout, ReadTimeout
-from urllib3.exceptions import ReadTimeoutError, MaxRetryError
+from requests.exceptions import ConnectionError
 
 
 _INDEX_URL = 'http://registry.mfsa.com.mt/index.jsp'
@@ -88,7 +84,7 @@ def relogin():
     _PROXIES['https'] = get_proxy()
 
     _SESSION.close()
-    time.sleep(5)
+    time.sleep(2)
     _SESSION = requests.Session()
     _SESSION.headers.update(_HEADERS)
     _SESSION.get(_INDEX_URL, timeout=3.0, proxies=_PROXIES)
@@ -126,9 +122,9 @@ def session_request(url, entity=None, get_response=True, rtype=None, params=None
                     response = _SESSION.get(url, timeout=3.0, proxies=_PROXIES)
 
                 break
-            except (ConnectionError, HTTPError, ProxyError, ReadTimeout, ConnectTimeout, timeout, ReadTimeoutError):
+            except (ConnectionError):
                 retry += 1
-                time.sleep(2)
+                time.sleep(1)
 
         if get_response:
             return response
@@ -137,7 +133,7 @@ def session_request(url, entity=None, get_response=True, rtype=None, params=None
         _MAX_REQUESTS -= 1
         return request(url, get_response=get_response, rtype=rtype, params=params)
     else:
-        time.sleep(5)
+        time.sleep(2)
         relogin()
         if not request(_SEARCH_URL):
             return None
